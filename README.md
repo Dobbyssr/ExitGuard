@@ -38,12 +38,12 @@
 
 ## 데모
 
-**▶️ [데모 화면 바로 보기](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html)** — GitHub Pages에서 바로 실행
+브라우저에서 바로 실행되는 라이브 데모 (GitHub Pages):
+- ▶️ **[데모 화면 (나모업로드 단일본)](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html)** — 단일본
+- ▶️ **[플로우 워크스루](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard%20%ED%94%8C%EB%A1%9C%EC%9A%B0%20%EC%9B%8C%ED%81%AC%EC%8A%A4%EB%A3%A8.dc.html)** — 화면 흐름 워크스루
+- ▶️ **[통합 실동작 프로토타입](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard%20%ED%86%B5%ED%95%A9%20%28standalone%29.html)** — 통합본
 
-`데모/` 폴더의 HTML을 내려받아 브라우저에서 직접 열어도 됩니다.
-- `ExitGuard-나모업로드-단일본.html` — 단일본 (위 링크로 바로 보기)
-- `ExitGuard 통합 (standalone).html` — 통합 실동작 프로토타입
-- `ExitGuard 플로우 워크스루.dc.html` — 플로우 워크스루
+> `데모/` 폴더의 HTML을 내려받아 브라우저에서 직접 열어도 됩니다.
 
 ## 발표 자료
 `발표덱/` 폴더.
