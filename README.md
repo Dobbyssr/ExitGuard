@@ -7,6 +7,15 @@
 
 ---
 
+## 소개 페이지
+문제 → 3-Rail 게이트 → 작동 방식 → 근거를 한 화면에 담은 프로젝트 랜딩 페이지.
+
+- 퇴사는 하나의 이벤트가 아니다 — **노무·영업비밀·보안 3개 리스크가 동시에** 터진다
+- 부서별 엑셀에 흩어진 마지막 체크를 **단일 관문·단일 책임자** 아래로 모은다
+- **세 레일을 모두 통과해야 퇴사 승인** · 그룹웨어 read-only 연동 · 법정 근거 기반
+
+▶️ **[소개 페이지 바로 보기](https://dobbyssr.github.io/ExitGuard/%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80/EixtGuard_%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80.html)**
+
 ## 문제 — 나가는 직원은 칼 두 개를 겨눈다
 직원이 퇴사하는 순간, 회사는 두 가지 위협을 동시에 마주합니다.
 - **유출** — 기술·영업비밀이 걸어 나간다 (퇴사 후 회사 계정 50% 잔존·OneLogin, 비밀보호서약 체결 44.8%)
@@ -41,14 +50,8 @@
 브라우저에서 바로 실행되는 라이브 데모 (GitHub Pages):
 - ▶️ **[데모 화면 (나모업로드 단일본)](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html)** — 단일본
 - 📄 **[플로우 워크스루 (PDF)](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard%20%ED%94%8C%EB%A1%9C%EC%9A%B0%20%EC%9B%8C%ED%81%AC%EC%8A%A4%EB%A3%A8.pdf)** — 화면 흐름 워크스루
-- ▶️ **[통합 실동작 프로토타입](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard%20%ED%86%B5%ED%95%A9%20%28standalone%29.html)** — 통합본
 
 > `데모/` 폴더의 HTML을 내려받아 브라우저에서 직접 열어도 됩니다.
-
-## 발표 자료
-`발표덱/` 폴더.
-- `ExitGuard-발표덱.html` — 발표덱 (17슬라이드)
-- `ExitGuard_A_임팩트형_30초.pptx` · `ExitGuard_B_논리형_30초.pptx` — 30초 피치 덱
 
 ## 사업계획서
 `사업계획서/` — 상세 사업계획서 (HTML · PDF)
