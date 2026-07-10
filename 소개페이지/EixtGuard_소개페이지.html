@@ -1,0 +1,852 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExitGuard · 퇴사 리스크를 하나의 관문에서 막는다</title>
+<meta name="description" content="노무·영업비밀·보안 3개 레일을 모두 통과해야 퇴사가 승인되는 통합 오프보딩 게이트. 그룹웨어 read-only 연동, 법정 근거 기반.">
+<style>
+  :root{
+    --ink:#14343A;
+    --ink-2:#3E5B61;
+    --ink-3:#6E858A;
+    --brand:#0FB2C4;
+    --brand-deep:#0A7C8B;
+    --brand-ink:#08454E;
+    --paper:#E4ECEF;
+    --paper-2:#EDF3F5;
+    --surface:#FFFFFF;
+    --line:#D3E0E3;
+    --line-soft:#E2EBED;
+    --rail-labor:#0FB2C4;
+    --rail-secret:#8B5CF6;
+    --rail-security:#F59E0B;
+    --shadow-sm:0 1px 2px rgba(20,52,58,.06), 0 2px 8px rgba(15,178,196,.06);
+    --shadow-md:0 8px 28px rgba(15,178,196,.12), 0 2px 8px rgba(20,52,58,.06);
+    --shadow-lg:0 24px 60px rgba(10,124,139,.20), 0 6px 18px rgba(20,52,58,.08);
+    --r-lg:20px;
+    --r-md:16px;
+    --r-sm:12px;
+    --r-pill:999px;
+    --maxw:1200px;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,'Pretendard','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR','Segoe UI',sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,p{margin:0}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+  /* focus visibility */
+  a:focus-visible,button:focus-visible{
+    outline:2.5px solid var(--brand);
+    outline-offset:3px;
+    border-radius:6px;
+  }
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:15px;font-weight:650;letter-spacing:-.01em;
+    padding:13px 22px;border-radius:var(--r-pill);
+    border:1px solid transparent;cursor:pointer;
+    transition:transform .18s var(--ease),box-shadow .25s var(--ease),background .2s var(--ease);
+    white-space:nowrap;
+  }
+  .btn-primary{
+    background:var(--brand);color:#fff;
+    box-shadow:0 6px 18px rgba(15,178,196,.34);
+  }
+  .btn-primary:hover{background:var(--brand-deep);transform:translateY(-2px);box-shadow:0 10px 26px rgba(10,124,139,.40)}
+  .btn-primary:active{transform:translateY(0) scale(.985)}
+  .btn-ghost{
+    background:transparent;color:var(--brand-ink);
+    border-color:var(--line);
+  }
+  .btn-ghost:hover{border-color:var(--brand);color:var(--brand-deep);background:rgba(15,178,196,.05);transform:translateY(-1px)}
+  .btn-ghost:active{transform:translateY(0)}
+  .btn-lg{font-size:16px;padding:16px 28px}
+  .btn svg{width:17px;height:17px;flex:none}
+  /* ---------- nav ---------- */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    height:66px;display:flex;align-items:center;
+    background:rgba(240,246,247,.82);
+    backdrop-filter:saturate(1.4) blur(14px);
+    -webkit-backdrop-filter:saturate(1.4) blur(14px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .mark{width:40px;height:33px;flex:none;display:block}
+  .brand .mark svg{display:block;width:100%;height:100%}
+  .brand b{font-size:18px;font-weight:750;letter-spacing:-.025em;color:var(--ink);white-space:nowrap;line-height:1.1}
+  .brand b .wm-exit{display:inline;color:#3C4E72;font-weight:600}
+  .brand b .wm-guard{display:inline;color:var(--brand-deep);font-weight:800}
+  .brand span{display:block;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--brand-deep);margin-top:-2px}
+  .nav-links{display:flex;align-items:center;gap:26px}
+  .nav-links a{font-size:14.5px;font-weight:550;color:var(--ink-2);transition:color .18s}
+  .nav-links a:hover{color:var(--brand-deep)}
+  .nav-cta{display:flex;align-items:center;gap:14px}
+  @media (max-width:840px){
+    .nav-links{display:none}
+    .nav-cta .btn-ghost{display:none}
+  }
+  /* ---------- section scaffolding ---------- */
+  section{position:relative}
+  .kicker{
+    display:inline-block;font-size:12.5px;font-weight:700;
+    letter-spacing:.02em;color:var(--brand-deep);
+    margin-bottom:14px;
+  }
+  .h-sec{
+    font-size:clamp(28px,4.4vw,42px);font-weight:760;
+    letter-spacing:-.03em;line-height:1.14;color:var(--ink);
+  }
+  .lead{font-size:clamp(16px,1.7vw,18px);color:var(--ink-2);max-width:60ch;line-height:1.65}
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1!important;transform:none!important;transition:none!important}
+  }
+  /* ================= HERO ================= */
+  .hero{
+    padding:72px 0 84px;
+    background:
+      radial-gradient(120% 90% at 88% 0%, rgba(15,178,196,.10), transparent 55%),
+      linear-gradient(180deg,#EEF4F5 0%, var(--paper) 100%);
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.02fr .98fr;
+    gap:56px;align-items:center;
+  }
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:9px;
+    font-size:13px;font-weight:650;color:var(--brand-ink);
+    background:rgba(15,178,196,.10);
+    border:1px solid rgba(15,178,196,.24);
+    padding:7px 14px 7px 11px;border-radius:var(--r-pill);
+    margin-bottom:24px;
+  }
+  .hero-eyebrow svg{width:15px;height:15px;color:var(--brand-deep)}
+  /* gate frame device around headline */
+  .gateframe{position:relative;padding-left:26px}
+  .gateframe::before{
+    content:"";position:absolute;left:0;top:4px;bottom:4px;width:5px;
+    border-radius:5px;
+    background:linear-gradient(180deg,var(--brand) 0%, var(--brand-deep) 100%);
+  }
+  h1.hero-h{
+    font-size:clamp(34px,5.2vw,56px);font-weight:790;
+    letter-spacing:-.035em;line-height:1.08;color:var(--ink);
+  }
+  h1.hero-h em{font-style:normal;color:var(--brand-deep)}
+  .hero-sub{margin-top:22px;font-size:clamp(16px,1.8vw,18.5px);color:var(--ink-2);max-width:34ch;line-height:1.62}
+  .hero-actions{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
+  .hero-visual{position:relative}
+  .shot{
+    border-radius:var(--r-lg);
+    border:1px solid var(--line);
+    background:#fff;
+    box-shadow:var(--shadow-lg);
+    overflow:hidden;
+  }
+  .shot img{width:100%;height:auto}
+  .hero-visual .shot{transform:perspective(1400px) rotateY(-4deg) rotateX(1.5deg)}
+  /* floating gate badge over shot */
+  .float-badge{
+    position:absolute;left:-22px;bottom:38px;
+    display:flex;align-items:center;gap:12px;
+    background:#fff;border:1px solid var(--line);
+    border-radius:var(--r-md);padding:13px 17px;
+    box-shadow:var(--shadow-md);
+  }
+  .float-badge .bico{
+    width:38px;height:38px;border-radius:11px;flex:none;
+    background:linear-gradient(135deg,var(--brand),var(--brand-deep));
+    display:flex;align-items:center;justify-content:center;color:#fff;
+  }
+  .float-badge .bico svg{width:21px;height:21px}
+  .float-badge .bt{font-size:12px;color:var(--ink-3);font-weight:600}
+  .float-badge .bn{font-size:19px;font-weight:770;color:var(--ink);letter-spacing:-.02em;line-height:1.1}
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .hero-visual .shot{transform:none}
+    .float-badge{left:12px;bottom:-18px}
+  }
+  @media (max-width:560px){
+    .hero{padding:48px 0 60px}
+    .float-badge{position:static;margin-top:16px;display:inline-flex}
+  }
+  /* ================= PROBLEM (dark band) ================= */
+  .problem{
+    background:
+      radial-gradient(90% 120% at 12% 0%, rgba(15,178,196,.22), transparent 60%),
+      linear-gradient(160deg,#0C3138 0%, #0A2B31 100%);
+    color:#EAF4F5;padding:88px 0;
+  }
+  .problem .kicker{color:#5FD8E6}
+  .problem .h-sec{color:#fff}
+  .problem .h-sec em{font-style:normal;color:#4FD3E2}
+  .problem .lead{color:#A9C6CB;max-width:56ch}
+  .stat-row{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:20px;margin-top:46px;
+  }
+  .stat{
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(120,200,210,.16);
+    border-radius:var(--r-md);
+    padding:26px 24px 24px;
+    transition:transform .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease);
+  }
+  .stat:hover{transform:translateY(-4px);background:rgba(255,255,255,.07);border-color:rgba(120,200,210,.34)}
+  .stat .tag{
+    display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.03em;
+    padding:4px 10px;border-radius:var(--r-pill);margin-bottom:16px;
+  }
+  .tag-labor{background:rgba(15,178,196,.18);color:#66E0EE}
+  .tag-secret{background:rgba(139,92,246,.20);color:#C4B0FA}
+  .tag-security{background:rgba(245,158,11,.18);color:#F7C877}
+  .stat .fig{font-size:clamp(38px,5vw,52px);font-weight:800;letter-spacing:-.04em;line-height:1;color:#fff}
+  .stat .fig sub{font-size:.44em;font-weight:700;vertical-align:baseline;color:#8FB4BA;margin-left:4px;letter-spacing:-.01em}
+  .stat .desc{margin-top:14px;font-size:14.5px;color:#B6D0D5;line-height:1.5}
+  .stat .desc b{color:#EAF4F5;font-weight:650}
+  .stat .src{
+    margin-top:16px;padding-top:13px;border-top:1px solid rgba(120,200,210,.16);
+    font-size:11.5px;color:#7CA0A6;letter-spacing:.005em;
+  }
+  .problem-note{margin-top:30px;font-size:13px;color:#7FA0A6;max-width:62ch}
+  @media (max-width:760px){
+    .problem{padding:60px 0}
+    .stat-row{grid-template-columns:1fr;gap:14px}
+  }
+  /* ================= CASES (real incident cards) ================= */
+  .cases{padding:92px 0;background:linear-gradient(180deg,#EAF1F2 0%, var(--paper) 100%)}
+  .cases-head{max-width:60ch;margin-bottom:44px}
+  .case-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  }
+  .case{
+    display:flex;flex-direction:column;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r-md);padding:24px 24px 20px;
+    box-shadow:var(--shadow-sm);
+    border-top:3px solid var(--line);
+    transition:transform .3s var(--ease),box-shadow .3s var(--ease);
+  }
+  .case:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+  .case--labor{border-top-color:var(--rail-labor)}
+  .case--secret{border-top-color:var(--rail-secret)}
+  .case--security{border-top-color:var(--rail-security)}
+  .case .ctag{
+    display:inline-block;align-self:flex-start;
+    font-size:11px;font-weight:700;letter-spacing:.03em;
+    padding:4px 10px;border-radius:var(--r-pill);margin-bottom:14px;
+  }
+  .case--labor .ctag{background:rgba(15,178,196,.12);color:var(--brand-deep)}
+  .case--secret .ctag{background:rgba(139,92,246,.12);color:#6D3FD1}
+  .case--security .ctag{background:rgba(245,158,11,.14);color:#B26D06}
+  .case .cttl{font-size:15.5px;font-weight:720;letter-spacing:-.02em;color:var(--ink);line-height:1.35}
+  .case .cdesc{margin-top:9px;font-size:13.5px;color:var(--ink-2);line-height:1.5}
+  .case .cresult{
+    margin-top:16px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  }
+  .case .cresult .rv{font-size:20px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .case--labor .cresult .rv{color:var(--brand-deep)}
+  .case--secret .cresult .rv{color:#6D3FD1}
+  .case--security .cresult .rv{color:#B26D06}
+  .case .cresult .rl{font-size:12.5px;color:var(--ink-3);font-weight:600}
+  .case .csrc{
+    margin-top:auto;padding-top:14px;border-top:1px solid var(--line-soft);
+    font-size:11.5px;color:var(--ink-3);line-height:1.45;
+  }
+  @media (max-width:900px){.case-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:600px){
+    .cases{padding:60px 0}
+    .case-grid{grid-template-columns:1fr}
+  }
+  /* ================= TESTIMONIAL (pilot feedback) ================= */
+  .voice{padding:20px 0 88px}
+  .voice-card{
+    position:relative;background:var(--surface);
+    border:1px solid var(--line);border-radius:var(--r-lg);
+    box-shadow:var(--shadow-md);
+    padding:clamp(34px,4.6vw,58px);
+    overflow:hidden;
+  }
+  .voice-card::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+    background:linear-gradient(180deg,var(--brand),var(--brand-deep));
+  }
+  .voice-mark{font-size:56px;line-height:.6;color:var(--brand);opacity:.28;font-weight:800;height:26px}
+  .voice-q{
+    margin-top:8px;font-size:clamp(19px,2.5vw,26px);font-weight:640;
+    letter-spacing:-.02em;color:var(--ink);line-height:1.5;max-width:32ch;
+  }
+  .voice-attr{
+    margin-top:24px;display:flex;align-items:center;gap:13px;
+  }
+  .voice-attr .av{
+    width:44px;height:44px;border-radius:var(--r-pill);flex:none;
+    background:linear-gradient(135deg,rgba(15,178,196,.16),rgba(15,178,196,.28));
+    border:1px solid rgba(15,178,196,.3);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--brand-deep);font-weight:750;font-size:15px;
+  }
+  .voice-attr .an{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .voice-attr .ar{font-size:12.5px;color:var(--ink-3);margin-top:1px}
+  .voice-next{
+    margin-top:26px;padding-top:22px;border-top:1px solid var(--line-soft);
+    display:flex;align-items:flex-start;gap:12px;max-width:58ch;
+  }
+  .voice-next .nx-ico{
+    width:30px;height:30px;border-radius:9px;flex:none;
+    background:rgba(15,178,196,.1);color:var(--brand-deep);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .voice-next .nx-ico svg{width:16px;height:16px}
+  .voice-next .nx-t{font-size:13px;color:var(--ink-2);line-height:1.55}
+  .voice-next .nx-t b{color:var(--brand-deep);font-weight:700}
+  @media (max-width:600px){.voice{padding:0 0 60px}}
+  /* ================= SOLUTION (3-rail convergence) ================= */
+  .solution{padding:92px 0}
+  .sol-head{max-width:64ch;margin-bottom:52px}
+  .converge{
+    display:grid;grid-template-columns:1fr;gap:0;
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r-lg);box-shadow:var(--shadow-md);
+    overflow:hidden;
+  }
+  .rails{
+    display:grid;grid-template-columns:repeat(3,1fr);
+  }
+  .rail{
+    padding:30px 28px 34px;position:relative;
+    border-right:1px solid var(--line-soft);
+  }
+  .rail:last-child{border-right:none}
+  .rail-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .rail-ico{
+    width:42px;height:42px;border-radius:12px;flex:none;
+    display:flex;align-items:center;justify-content:center;color:#fff;
+  }
+  .rail-ico svg{width:22px;height:22px}
+  .rail--labor .rail-ico{background:var(--rail-labor)}
+  .rail--secret .rail-ico{background:var(--rail-secret)}
+  .rail--security .rail-ico{background:var(--rail-security)}
+  .rail .rname{font-size:17px;font-weight:730;letter-spacing:-.02em;color:var(--ink)}
+  .rail .rrole{font-size:12px;font-weight:600;color:var(--ink-3);margin-top:1px}
+  .rail .rdesc{font-size:14px;color:var(--ink-2);line-height:1.55;margin-bottom:16px}
+  .rail ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .rail li{font-size:13.5px;color:var(--ink-2);display:flex;gap:9px;align-items:flex-start;line-height:1.45}
+  .rail li svg{width:16px;height:16px;flex:none;margin-top:2px}
+  .rail--labor li svg{color:var(--rail-labor)}
+  .rail--secret li svg{color:var(--rail-secret)}
+  .rail--security li svg{color:var(--rail-security)}
+  /* the gate bar: three rails converge into one approval */
+  .gatebar{
+    background:linear-gradient(100deg,var(--brand-ink) 0%, var(--brand-deep) 100%);
+    color:#fff;padding:22px 28px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+    position:relative;
+  }
+  .gatebar::before{
+    content:"";position:absolute;top:-1px;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,var(--rail-labor) 0% 33.33%, var(--rail-secret) 33.33% 66.66%, var(--rail-security) 66.66% 100%);
+  }
+  .gatebar .gb-l{display:flex;align-items:center;gap:14px}
+  .gatebar .gb-ico{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex:none}
+  .gatebar .gb-ico svg{width:22px;height:22px}
+  .gatebar .gb-t{font-size:16.5px;font-weight:720;letter-spacing:-.015em}
+  .gatebar .gb-s{font-size:13px;color:#B9E4EA;margin-top:1px}
+  .gatebar .gb-stamp{
+    font-size:13px;font-weight:700;letter-spacing:.01em;
+    background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);
+    padding:9px 16px;border-radius:var(--r-pill);white-space:nowrap;
+    display:flex;align-items:center;gap:8px;
+  }
+  .gatebar .gb-stamp svg{width:16px;height:16px}
+  .sol-shot{margin-top:34px}
+  .figcap{margin-top:14px;font-size:13px;color:var(--ink-3);text-align:center}
+  @media (max-width:820px){
+    .solution{padding:64px 0}
+    .rails{grid-template-columns:1fr}
+    .rail{border-right:none;border-bottom:1px solid var(--line-soft)}
+    .gatebar{flex-direction:column;align-items:flex-start;gap:14px}
+  }
+  /* ================= HOW IT WORKS (flow to gate) ================= */
+  .how{padding:88px 0;background:linear-gradient(180deg,var(--paper) 0%, #EAF1F2 100%)}
+  .how-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    margin-top:48px;
+  }
+  .step{
+    position:relative;padding:0 22px;
+  }
+  .step:not(:last-child)::after{
+    content:"";position:absolute;top:26px;right:-16px;width:32px;height:2px;
+    background:repeating-linear-gradient(90deg,var(--brand) 0 6px,transparent 6px 11px);
+  }
+  .step .sn{
+    width:52px;height:52px;border-radius:15px;
+    background:var(--surface);border:1px solid var(--line);
+    box-shadow:var(--shadow-sm);
+    display:flex;align-items:center;justify-content:center;color:var(--brand-deep);
+    margin-bottom:18px;
+  }
+  .step .sn svg{width:25px;height:25px}
+  .step.gate .sn{background:linear-gradient(135deg,var(--brand),var(--brand-deep));border-color:transparent;color:#fff;box-shadow:0 8px 20px rgba(15,178,196,.34)}
+  .step .st{font-size:16px;font-weight:720;letter-spacing:-.02em;color:var(--ink)}
+  .step .sd{margin-top:8px;font-size:13.5px;color:var(--ink-2);line-height:1.5;max-width:22ch}
+  @media (max-width:820px){
+    .how{padding:60px 0}
+    .how-grid{grid-template-columns:1fr;gap:8px}
+    .step{padding:14px 0 14px 0;display:grid;grid-template-columns:52px 1fr;column-gap:18px;align-items:start}
+    .step .sn{margin-bottom:0}
+    .step .stwrap{grid-column:2}
+    .step:not(:last-child)::after{display:none}
+    .step:not(:last-child)::before{
+      content:"";position:absolute;left:25px;top:58px;bottom:-8px;width:2px;
+      background:repeating-linear-gradient(180deg,var(--brand) 0 6px,transparent 6px 11px);
+    }
+    .step .sd{max-width:none}
+  }
+  /* ================= EVIDENCE BAND ================= */
+  .evidence{padding:84px 0}
+  .ev-card{
+    background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r-lg);box-shadow:var(--shadow-md);
+    padding:44px clamp(24px,4vw,52px);
+  }
+  .ev-top{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
+  .ev-figrow{display:grid;grid-template-columns:repeat(2,1fr);gap:26px 34px;margin-top:8px}
+  .ev-fig .n{font-size:clamp(30px,3.4vw,40px);font-weight:800;letter-spacing:-.04em;color:var(--brand-deep);line-height:1}
+  .ev-fig .l{margin-top:8px;font-size:13.5px;color:var(--ink-2);line-height:1.45}
+  .ev-fig .s{margin-top:5px;font-size:11px;color:var(--ink-3);letter-spacing:.005em}
+  .ev-quote{
+    border-left:4px solid var(--brand);padding-left:22px;
+  }
+  .ev-quote p{font-size:clamp(18px,2.1vw,22px);font-weight:600;letter-spacing:-.02em;color:var(--ink);line-height:1.45}
+  .ev-quote .qa{margin-top:14px;font-size:13px;color:var(--ink-3);font-weight:600}
+  .ev-src{
+    margin-top:30px;padding-top:22px;border-top:1px solid var(--line-soft);
+    font-size:12.5px;color:var(--ink-3);line-height:1.6;
+  }
+  .ev-src b{color:var(--ink-2);font-weight:650}
+  @media (max-width:820px){
+    .evidence{padding:60px 0}
+    .ev-top{grid-template-columns:1fr;gap:34px}
+  }
+  @media (max-width:460px){
+    .ev-figrow{grid-template-columns:1fr}
+  }
+  /* ================= CTA ================= */
+  .cta{padding:20px 0 96px}
+  .cta-card{
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(90% 140% at 85% 20%, rgba(15,178,196,.30), transparent 55%),
+      linear-gradient(150deg,#0C3138 0%, #0A2B31 100%);
+    border-radius:26px;color:#fff;
+    padding:clamp(44px,6vw,76px) clamp(28px,5vw,68px);
+    text-align:center;
+  }
+  .cta-card::before{
+    content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);
+    width:min(560px,80%);height:4px;
+    background:linear-gradient(90deg,var(--rail-labor) 0% 33.33%,var(--rail-secret) 33.33% 66.66%,var(--rail-security) 66.66% 100%);
+    border-radius:0 0 6px 6px;
+  }
+  .cta-card h2{font-size:clamp(26px,3.6vw,38px);font-weight:770;letter-spacing:-.03em;line-height:1.16}
+  .cta-card p{margin:18px auto 0;font-size:16px;color:#B6D0D5;max-width:46ch;line-height:1.6}
+  .cta-card .btn-primary{margin-top:32px}
+  .cta-card .btn-primary:hover{background:#fff;color:var(--brand-ink)}
+  /* ================= FOOTER ================= */
+  footer{background:#0A2B31;color:#8FB4BA;padding:40px 0 46px}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .foot .brand b{color:#EAF4F5}
+  .foot .brand b .wm-exit{color:#EAF4F5}
+  .foot .brand b .wm-guard{color:#3FCEDE}
+  .foot .brand span{color:#5FD8E6}
+  .foot .fmeta{font-size:12.5px;color:#6E9198;line-height:1.6;max-width:44ch}
+  @media (max-width:640px){.foot{flex-direction:column;align-items:flex-start}}
+</style>
+<header class="nav">
+  <div class="wrap"><a href="#top" class="brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ExitGuard 로고">
+          <rect x="6" y="8" width="36" height="14" fill="#0FB2C4"></rect>
+          <rect x="6" y="43" width="36" height="14" fill="#8B5CF6"></rect>
+          <rect x="6" y="78" width="36" height="14" fill="#F59E0B"></rect>
+          <g fill="#3C4E72">
+            <rect x="44" y="8" width="14" height="84"></rect>
+            <rect x="44" y="8" width="68" height="14"></rect>
+            <rect x="44" y="78" width="68" height="14"></rect>
+            <rect x="98" y="22" width="14" height="12"></rect>
+            <rect x="98" y="43" width="14" height="49"></rect>
+            <rect x="70" y="43" width="42" height="14"></rect>
+          </g>
+        </svg></span>
+      <span>
+        <b><span class="wm-exit">Exit</span><span class="wm-guard">Guard</span></b>
+        <span>3-Rail Exit Gate</span>
+      </span>
+    </a>
+    <nav class="nav-links"><a href="#problem">왜 필요한가</a><a href="#cases">피해사례</a><a href="#solution">3-Rail 게이트</a><a href="#how">작동 방식</a><a href="#evidence">근거</a></nav>
+    <div class="nav-cta"><a href="#solution" class="btn btn-ghost">제품 살펴보기</a><a href="../%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html" class="btn btn-primary">데모 보기</a></div>
+  </div>
+</header>
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="reveal"><span class="hero-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          노무 · 영업비밀 · 보안을 하나의 관문으로
+        </span>
+        <div class="gateframe">
+          <h1 class="hero-h">퇴사 리스크를<br>하나의 <em>관문</em>에서 막는다</h1>
+        </div>
+        <p class="hero-sub">노무·영업비밀·보안 3개 레일을 모두 통과해야 퇴사가 승인됩니다. 그룹웨어 read-only 연동, 법정 근거 기반.</p>
+        <div class="hero-actions"><a href="../%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html" class="btn btn-primary btn-lg">데모 보기
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"></path>
+            </svg>
+          </a><a href="#solution" class="btn btn-ghost btn-lg">3-Rail 게이트 보기</a></div>
+      </div>
+      <div class="hero-visual reveal">
+        <div class="shot"><img src="https://firebasestorage.googleapis.com/v0/b/sunbisites.firebasestorage.app/o/sites%2Fa3decf9610dc41f7bb71%2Fassets%2Fexitguard-dashboard.JPEG?alt=media" alt="ExitGuard 대시보드: 진행 중 퇴사자 8명·상신 검토 대기·미해소 리스크·레일별 항목 충족 현황과 3레일 완료율 라디얼, 방어 가능률 82%" /></div>
+        <div class="float-badge"><span class="bico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+          </span><span>
+            <span class="bt">방어 가능률</span>
+            <span class="bn tnum">82%</span>
+          </span></div>
+      </div>
+    </div>
+  </section>
+  <section id="problem" class="problem">
+    <div class="wrap">
+      <div class="reveal"><span class="kicker">퇴사는 하나의 이벤트가 아니다</span>
+        <h2 class="h-sec">한 사람이 나갈 때,<br><em>세 개의 리스크</em>가 동시에 터진다</h2>
+        <p class="lead" style="margin-top:18px">퇴사 시점의 마지막 체크가 인사팀·법무팀·보안팀의 엑셀에 흩어져 있습니다. 그 틈으로 사고가 새어 나갑니다.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat reveal"><span class="tag tag-secret">영업비밀</span>
+          <div class="fig tnum">88.3<sub>%</sub></div>
+          <p class="desc">산업기술 유출범이 <b>내부자(전·현직)</b>입니다. 영업비밀 유출 주체 1위는 <b>퇴직자(51.2%)</b>. 위협은 이미 문 안에 있습니다.</p>
+          <p class="src">출처: 경찰청 2024 (88.3%) · 특허청 지식재산보호 실태조사 2023 (51.2%)</p>
+        </div>
+        <div class="stat reveal"><span class="tag tag-security">보안</span>
+          <div class="fig tnum">6,246<sub>억 원</sub></div>
+          <p class="desc">퇴직자 계정 방치 하나가 <b>역대 최대 과징금</b>으로 이어졌습니다. 퇴사 예고 후 24시간 내 데이터 유출은 <b>720% 급증</b>합니다.</p>
+          <p class="src">출처: 개인정보보호위원회 2026 (과징금) · Cyberhaven 2024 Insider Risk Report (720%)</p>
+        </div>
+        <div class="stat reveal"><span class="tag tag-labor">노무</span>
+          <div class="fig tnum">2<sub>조 원</sub></div>
+          <p class="desc">2024년 임금체불 총액, 피해 근로자 <b>28만 명</b>. 퇴직금은 14일만 늦어도 형사처벌과 <b>연 20% 지연이자</b>입니다.</p>
+          <p class="src">출처: 고용노동부 노동포털 임금체불통계 2024</p>
+        </div>
+      </div>
+      <p class="problem-note">유출·분쟁은 터지면 되돌릴 수 없습니다. 기술유출 기소율은 18.7%, 25조 원이 새어나가는 동안 실형은 누적 9건. 통제 가능한 유일한 지점은 퇴사 관문입니다. (출처: 국가정보원 · 경찰청 2024)</p>
+    </div>
+  </section>
+  <section id="cases" class="cases">
+    <div class="wrap">
+      <div class="cases-head reveal">
+        <h2 class="h-sec">퇴사 관문에서<br>막을 수 있었던 사건들</h2>
+        <p class="lead" style="margin-top:18px">모두 실제 판결·행정처분입니다. 세 레일 중 하나만 제때 점검됐어도 결과는 달랐습니다.</p>
+      </div>
+      <div class="case-grid">
+        <article class="case case--secret reveal"><span class="ctag">영업비밀</span>
+          <h3 class="cttl">삼성 18나노 D램 기술, 중국 CXMT로 유출</h3>
+          <p class="cdesc">개발비 1.6조 원 규모 핵심 공정을 퇴사 후 경쟁국으로. 기술유출 1심 최고형이 선고됐습니다.</p>
+          <div class="cresult"><span class="rv">징역 7년</span><span class="rl">1심 선고</span></div>
+          <p class="csrc">출처: 파이낸셜뉴스 2026.04.22</p>
+        </article>
+        <article class="case case--secret reveal"><span class="ctag">영업비밀</span>
+          <h3 class="cttl">LG디스플레이 OLED 양산기술, 중국 유출</h3>
+          <p class="cdesc">광저우 공장 설계도면을 빼돌려 기소. 퇴사자가 전 직장 현직자를 공모자로 끌어들인 구조였습니다.</p>
+          <div class="cresult"><span class="rv">2명 구속</span><span class="rl">1명 불구속 기소</span></div>
+          <p class="csrc">출처: MBC 2024.08.20</p>
+        </article>
+        <article class="case case--security reveal"><span class="ctag">보안</span>
+          <h3 class="cttl">쿠팡 퇴직자 서명키 방치, 개인정보 유출</h3>
+          <p class="cdesc">퇴직자 자격증명 하나를 회수하지 않아 약 3,755만 명 정보가 노출. 역대 최대 과징금으로 이어졌습니다.</p>
+          <div class="cresult"><span class="rv">과징금 6,246억 원</span><span class="rl">역대 최대</span></div>
+          <p class="csrc">출처: 개인정보보호위원회 · ZDNet 2026.06.11</p>
+        </article>
+        <article class="case case--security reveal"><span class="ctag">보안</span>
+          <h3 class="cttl">KT 퇴직자 ID 연계 URL 미삭제</h3>
+          <p class="cdesc">계정을 지웠지만 연결된 URL 하나가 남아 고객정보가 새어 나갔습니다. ID 삭제가 접근권한 말소는 아닙니다.</p>
+          <div class="cresult"><span class="rv">83,246건 유출</span><span class="rl">과징금 처분</span></div>
+          <p class="csrc">출처: 개인정보보호위원회 2021 (대법 확정)</p>
+        </article>
+        <article class="case case--labor reveal"><span class="ctag">노무</span>
+          <h3 class="cttl">연차·월차수당 미지급, 220명 11.9억 원</h3>
+          <p class="cdesc">'작은 돈'으로 여긴 수당 미정산이 대규모 체불로 누적돼 실형으로 직결됐습니다.</p>
+          <div class="cresult"><span class="rv">징역 실형</span><span class="rl">1심 선고</span></div>
+          <p class="csrc">출처: 광주지법 2025.04</p>
+        </article>
+        <article class="case case--labor reveal"><span class="ctag">노무</span>
+          <h3 class="cttl">임금체불 사상 첫 2조 원 돌파</h3>
+          <p class="cdesc">피해 근로자 28만 명. 퇴직금·수당 정산 누락이 개별 사업장의 형사 리스크로 쌓이고 있습니다.</p>
+          <div class="cresult"><span class="rv">2조 448억 원</span><span class="rl">2024년 총액</span></div>
+          <p class="csrc">출처: 고용노동부 노동포털 2024</p>
+        </article>
+      </div>
+    </div>
+  </section>
+  <section id="solution" class="solution">
+    <div class="wrap">
+      <div class="sol-head reveal"><span class="kicker">3-Rail Exit Gate</span>
+        <h2 class="h-sec">흩어진 세 개의 방어를<br>하나의 게이트로</h2>
+        <p class="lead" style="margin-top:18px">노무·영업비밀·보안 세 레일이 모두 충족돼야 퇴사가 승인됩니다. 부서별로 나뉜 정보 비대칭을 단일 관문·단일 책임자 아래로 모읍니다.</p>
+      </div>
+      <div class="converge reveal">
+        <div class="rails">
+          <div class="rail rail--labor">
+            <div class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 11l3 3L22 4"></path>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg></span><span><span class="rname">노무 레일</span><span class="rrole">퇴사 노동분쟁 차단</span></span></div>
+            <p class="rdesc">금품청산·퇴직금·수당 정산을 퇴사 전 체크리스트로 강제합니다.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>금품청산 14일 기한 추적</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>이직확인서·4대보험 상실신고</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>연차수당 정산 완료 확인</li>
+            </ul>
+          </div>
+          <div class="rail rail--secret">
+            <div class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg></span><span><span class="rname">영업비밀 레일</span><span class="rrole">기술·정보 유출 차단</span></span></div>
+            <p class="rdesc">소스코드·설계도면·고객DB 반출을 점검하고 접근권한을 회수합니다.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>대량 반출·클라우드 업로드 감지</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>비밀유지서약 재체결</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>접근권한 회수 완료 확인</li>
+            </ul>
+          </div>
+          <div class="rail rail--security">
+            <div class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="M9 12l2 2 4-4"></path>
+                </svg></span><span><span class="rname">보안 레일</span><span class="rrole">계정·자산 오프보딩</span></span></div>
+            <p class="rdesc">계정·외부 SaaS 권한을 회수하고 자산 반납을 퇴사 전 완료시킵니다.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>계정·SaaS 권한 일괄 회수</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>퇴사 직전 대량 반출 감지</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+                </svg>장비·자산 반납 확인</li>
+            </ul>
+          </div>
+        </div>
+        <div class="gatebar">
+          <div class="gb-l"><span class="gb-ico"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 21V7a6 6 0 0 1 12 0v14"></path>
+                <path d="M11 13h5"></path>
+                <path d="M14 10l3 3-3 3"></path>
+              </svg></span><span>
+              <div class="gb-t">세 레일 모두 통과 → 퇴사 승인</div>
+              <div class="gb-s">하나라도 미충족이면 게이트는 열리지 않습니다</div>
+            </span></div><span class="gb-stamp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+            봉인 증적 자동 축적
+          </span>
+        </div>
+      </div>
+      <div class="sol-shot reveal">
+        <div class="shot"><img src="https://firebasestorage.googleapis.com/v0/b/sunbisites.firebasestorage.app/o/sites%2Fa3decf9610dc41f7bb71%2Fassets%2Fexitguard-rail.JPEG?alt=media" alt="ExitGuard 레일상세: 노무 레일 게이트 완료율 30%, 검사 항목별 법정 근거·기한과 기준 대조 근거(L1·L2·L3)" /></div>
+        <p class="figcap">레일상세 화면. 각 항목의 법정 근거와 기한이 타임라인으로 추적됩니다.</p>
+      </div>
+    </div>
+  </section>
+  <section id="how" class="how">
+    <div class="wrap">
+      <div class="reveal" style="max-width:60ch">
+        <h2 class="h-sec">사람이 깜빡해도<br>게이트는 놓치지 않는다</h2>
+      </div>
+      <div class="how-grid">
+        <div class="step reveal"><span class="sn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg></span>
+          <div class="stwrap">
+            <div class="st">연동해 수집한다</div>
+            <p class="sd">그룹웨어를 read-only로 연동해 퇴사·계정·자산 데이터를 자동 수집합니다.</p>
+          </div>
+        </div>
+        <div class="step reveal"><span class="sn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg></span>
+          <div class="stwrap">
+            <div class="st">3레일을 점검한다</div>
+            <p class="sd">노무·영업비밀·보안 항목을 법정 근거에 맞춰 자동 체크하고 리스크를 표시합니다.</p>
+          </div>
+        </div>
+        <div class="step reveal"><span class="sn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 11l-3 3-1.5-1.5"></path>
+            </svg></span>
+          <div class="stwrap">
+            <div class="st">담당자가 승인한다</div>
+            <p class="sd">미충족 항목은 담당자에게 알림. 조치가 끝나야 다음 레일로 넘어갑니다.</p>
+          </div>
+        </div>
+        <div class="step gate reveal"><span class="sn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 21V7a6 6 0 0 1 12 0v14"></path>
+              <path d="M11 13h5"></path>
+              <path d="M14 10l3 3-3 3"></path>
+            </svg></span>
+          <div class="stwrap">
+            <div class="st">게이트를 통과한다</div>
+            <p class="sd">세 레일이 모두 통과하면 퇴사 승인. 전 과정이 봉인 증적으로 남습니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="evidence" class="evidence">
+    <div class="wrap">
+      <div class="ev-card reveal">
+        <div class="ev-top">
+          <div class="ev-quote">
+            <p>"위협은 이미 문 안에 있고, 퇴사할 때 나갑니다."</p>
+            <div class="qa">산업기술 유출범의 88%는 내부자, 영업비밀 유출 1위는 퇴직자</div>
+          </div>
+          <div class="ev-figrow">
+            <div class="ev-fig">
+              <div class="n tnum">23조 원</div>
+              <div class="l">최근 5년 산업기술 해외유출 추정 피해액</div>
+              <div class="s">출처: 국가정보원</div>
+            </div>
+            <div class="ev-fig">
+              <div class="n tnum">720%</div>
+              <div class="l">퇴사 예고 후 24시간 내 데이터 유출 증가</div>
+              <div class="s">출처: Cyberhaven 2024</div>
+            </div>
+            <div class="ev-fig">
+              <div class="n tnum">18.7%</div>
+              <div class="l">기술유출 기소율. 터진 뒤엔 되돌릴 수 없다</div>
+              <div class="s">출처: 경찰청 2024</div>
+            </div>
+            <div class="ev-fig">
+              <div class="n tnum">44.8%</div>
+              <div class="l">퇴직자에게 비밀보호서약을 받는 기업 비율</div>
+              <div class="s">출처: 특허청 2023</div>
+            </div>
+          </div>
+        </div>
+        <p class="ev-src"><b>출처</b> 경찰청 산업기술유출 검거현황 · 특허청 지식재산보호 실태조사 · 국가정보원 기술유출현황 · 고용노동부 임금체불통계 · 개인정보보호위원회 · Cyberhaven 2024 Insider Risk Report. 국내 기술유출 형량은 1심·원심 기준이며 대법 파기환송 등으로 변동될 수 있습니다.</p>
+      </div>
+    </div>
+  </section>
+  <section id="voice" class="voice">
+    <div class="wrap">
+      <div class="voice-card reveal">
+        <div class="voice-mark">“</div>
+        <p class="voice-q">"퇴사자가 생기면 인사·총무가 챙길 이슈와 제출받을 항목이 많은데, 체크리스트 덕분에 하나도 놓치지 않았습니다. 이후 데이터 보존도 개인별·부서별로 한눈에 확인돼 좋았습니다."</p>
+        <div class="voice-attr"><span class="av">S</span><span>
+            <div class="an">에스에스알(SSR Inc.) 인사 담당자 · 장OO</div>
+            <div class="ar">파일럿 도입 소감</div>
+          </span></div>
+        <div class="voice-next"><span class="nx-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path>
+            </svg>
+          </span>
+          <p class="nx-t"><b>다음 단계로 준비 중.</b> "담당자끼리 현황을 공유할 수 있으면 더 좋겠다"는 파일럿 피드백을 반영해 팀 공유 기능을 로드맵에 담았습니다. (에스에스알 인사 담당자 · 유OO)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="cta" class="cta">
+    <div class="wrap">
+      <div class="cta-card reveal">
+        <h2>퇴사 관문에서 막을 수 있게</h2>
+        <p>사고가 터진 뒤 수천억을 배상하는 대신, ExitGuard 대시보드에서 3-Rail Exit Gate가 실제로 어떻게 작동하는지 확인해 보세요.</p><a href="../%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html" class="btn btn-primary btn-lg">데모 보기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="wrap foot">
+    <div class="brand"><span class="mark"><svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ExitGuard 로고">
+          <rect x="6" y="8" width="36" height="14" fill="#0FB2C4"></rect>
+          <rect x="6" y="43" width="36" height="14" fill="#8B5CF6"></rect>
+          <rect x="6" y="78" width="36" height="14" fill="#F59E0B"></rect>
+          <g fill="#FFFFFF">
+            <rect x="44" y="8" width="14" height="84"></rect>
+            <rect x="44" y="8" width="68" height="14"></rect>
+            <rect x="44" y="78" width="68" height="14"></rect>
+            <rect x="98" y="22" width="14" height="12"></rect>
+            <rect x="98" y="43" width="14" height="49"></rect>
+            <rect x="70" y="43" width="42" height="14"></rect>
+          </g>
+        </svg></span><span>
+        <b><span class="wm-exit">Exit</span><span class="wm-guard">Guard</span></b>
+        <span>3-Rail Exit Gate</span>
+      </span></div>
+    <p class="fmeta">퇴사 리스크 통합 오프보딩 게이트. 지란지교 해커톤 출품작. 본 페이지의 수치는 공개 통계·판례에 근거하며 화면은 개발 중 목업입니다.</p>
+  </div>
+</footer>
+<script>
+  // Scroll-reveal via IntersectionObserver (no scroll listeners). Motivated: staggered
+  // reveal establishes reading hierarchy top-to-bottom. Honors reduced-motion.
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = document.querySelectorAll('.reveal');
+    if (reduce || !('IntersectionObserver' in window)) {
+      els.forEach(function(el){ el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+</script>
