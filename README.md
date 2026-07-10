@@ -37,9 +37,13 @@
 - 생성형 AI로 흩어진 비정형 기준을 자동 대조할 수 있게 된 첫 시점
 
 ## 데모
-`데모/` 폴더의 HTML을 브라우저에서 바로 열어보세요.
+
+**▶️ [데모 화면 바로 보기](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html)** — GitHub Pages에서 바로 실행
+
+`데모/` 폴더의 HTML을 내려받아 브라우저에서 직접 열어도 됩니다.
+- `ExitGuard-나모업로드-단일본.html` — 단일본 (위 링크로 바로 보기)
 - `ExitGuard 통합 (standalone).html` — 통합 실동작 프로토타입
-- `ExitGuard-나모업로드-단일본.html` — 단일본
+- `ExitGuard 플로우 워크스루.dc.html` — 플로우 워크스루
 
 ## 발표 자료
 `발표덱/` 폴더.
