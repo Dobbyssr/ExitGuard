@@ -29,7 +29,7 @@
 | 레이어 | 스택 |
 |---|---|
 | 디자인 | Claude Design |
-| Frontend | Next.js + shadcn/ui |
+| Frontend | Next.js 16 (App Router) + shadcn/ui |
 | Backend | Python 3.12 · FastAPI · uv |
 | DB | PostgreSQL |
 | Cache | Redis |
@@ -38,6 +38,12 @@
 
 - ExitGuard는 법률·노무 **"판단"을 하지 않는다.** '진단'이라는 단어조차 쓰지 않는다. 공개 기준과 회사 상태의 **대조·기한·기록**만 제공한다.
 - 문구 규율·법적 경계의 상세는 `dobby/PRODUCT.md §4`. 제품 UI·문서·발표 전부에 적용된다.
+
+## 커밋 메시지 규칙 (팀 통일 — 도비도 이 양식으로 커밋)
+
+- 양식: `<타입>(<범위>): <요약 50자·마침표 없음>` + 필요 시 본문. Conventional Commits 경량판.
+- 타입: `feat`/`fix`/`docs`/`design`/`refactor`/`chore`/`test`. 범위(선택): `dobby`/`spec`/`design`/`be`/`fe`/`pitch`/`infra`.
+- 상세·예시 = `ONBOARDING.md §커밋 규칙`. (도비 커밋엔 `Co-Authored-By: Claude …` 꼬리말 유지)
 
 ## 현재 단계
 
