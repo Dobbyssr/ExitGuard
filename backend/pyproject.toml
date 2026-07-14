@@ -1,0 +1,11 @@
+[project]
+name = "exitguard-backend"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.139.0",
+    "pg8000>=1.31.5",
+    "sqlmodel>=0.0.39",
+    "uvicorn[standard]>=0.51.0",
+]

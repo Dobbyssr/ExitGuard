@@ -2,3 +2,9 @@
 
 # JetBrains IDE (개인 환경)
 .idea/
+.gstack/
+
+# Python (backend/)
+.venv/
+__pycache__/
+*.pyc

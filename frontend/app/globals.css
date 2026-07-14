@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ExitGuard 디자인 토큰 SSOT (루나 소유, 수정 금지) — 색·radius·3레일/L1-L3 배지 변수 전부 여기서 온다. */
+@import "../../docs/design/tokens.css";
+
+/* shadcn 기본 스캐폴드가 쓰는 radius/폰트 폴백 — tokens.css가 정의하지 않는 확장 반경만 보완 */
+@theme inline {
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --radius-xl: calc(var(--radius-card) * 1.4);
+  --radius-2xl: calc(var(--radius-card) * 1.8);
+  --radius-3xl: calc(var(--radius-card) * 2.2);
+  --radius-4xl: calc(var(--radius-card) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

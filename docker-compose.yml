@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      # 호스트 5433 → 컨테이너 5432. 이 개발머신에 기존 네이티브 Postgres 서비스가
+      # 이미 5432를 점유하고 있어 충돌 회피(app/config.py 기본 DATABASE_URL과 일치시킬 것).
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: exitguard
+      POSTGRES_PASSWORD: exitguard
+      POSTGRES_DB: exitguard
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

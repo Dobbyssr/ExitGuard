@@ -1,0 +1,281 @@
+/* =============================================================================
+   ExitGuard — Design Tokens (SSOT)
+   출처: pitch/데모/ExitGuard-나모업로드-단일본.html 의 실제 팔레트/다크모드/테마 시스템.
+   백지 창작 아님 — 데모 값을 그대로 시스템화한 것. 상세 근거는 DESIGN.md.
+
+   사용법 (해리):
+   - 이 파일을 app/globals.css 상단에 그대로 붙이거나 @import 한다.
+   - shadcn/ui 컴포넌트는 아래 :root / .dark 의 시맨틱 변수를 소비한다.
+   - Tailwind v4: 하단 @theme inline 블록이 유틸리티(bg-primary 등)로 노출한다.
+   - Tailwind v3: tailwind.config 의 theme.extend.colors 에 var(--...) 로 매핑.
+   - 다크모드: <html class="dark"> 토글. (데모와 동일하게 클래스 기반)
+
+   색 공간: hex/rgb 직접값. shadcn 기본 globals.css의 oklch로 바꿀 필요 없음 —
+   유효한 CSS이고 데모 원본과 1:1로 대조 가능해 오변환 위험이 없다.
+============================================================================= */
+
+:root {
+  /* ---- shadcn/ui 시맨틱 계약 (라이트) -------------------------------------
+     primary = 딥네이비(로고 G · 브랜드 앵커). 3레일 색과 충돌하지 않는다.
+     ※ 데모 기본 프라이머리는 청록(teal)이었다. 청록으로 되돌리려면
+       --primary/--ring/--sidebar-primary 3줄만 #0FB2C4 계열로 교체.
+       (DESIGN.md의 [결정필요] 참고) */
+  --background: #E4ECEF;          /* 페이지 캔버스 */
+  --foreground: #14343A;          /* 본문 잉크 */
+  --card: #ffffff;
+  --card-foreground: #14343A;
+  --popover: #ffffff;
+  --popover-foreground: #14343A;
+
+  --primary: #3C4E72;             /* 딥네이비 — 브랜드/주요 CTA */
+  --primary-foreground: #ffffff;
+  --secondary: #F1F5F6;           /* soft 표면 (칩·부버튼 배경) */
+  --secondary-foreground: #41616A;
+  --muted: #F6F8F9;
+  --muted-foreground: #7C949B;
+  --accent: #D6F5F7;              /* 강조 소프트(틸 계열) */
+  --accent-foreground: #0E8A99;
+  --destructive: #E11D48;
+  --destructive-foreground: #ffffff;
+
+  --border: #EAEFF1;
+  --input: #EAEFF1;
+  --ring: #3C4E72;
+
+  --radius: 0.75rem;              /* 12px 기준 — 버튼·메뉴 */
+
+  /* chart 팔레트 = 3레일 + 보조 */
+  --chart-1: #0FB2C4;             /* 노무 */
+  --chart-2: #8B5CF6;             /* 영업비밀 */
+  --chart-3: #F59E0B;             /* 보안 */
+  --chart-4: #22A06B;             /* 성공/충족 */
+  --chart-5: #3C4E72;             /* 브랜드 */
+
+  /* sidebar (shadcn sidebar 컴포넌트) */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #14343A;
+  --sidebar-primary: #3C4E72;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F1F5F6;
+  --sidebar-accent-foreground: #41616A;
+  --sidebar-border: #EAEFF1;
+  --sidebar-ring: #3C4E72;
+
+  /* ==== ExitGuard 도메인 토큰 (네임스페이스 eg-/rail-/src-) ================ */
+
+  /* 브랜드 스케일 (딥네이비) — 데모 PALETTE.navy */
+  --eg-1: #3C4E72;
+  --eg-2: #45577E;
+  --eg-3: #2F3F5D;
+  --eg-4: #26324b;
+  --eg-soft: #E4E8F1;
+  --eg-soft2: #EFF2F7;
+  --eg-glow: rgba(60,78,114,0.36);
+  --eg-glow-s: rgba(60,78,114,0.12);
+
+  /* 청록 액센트 (노무 레일 = 브랜드 보조 액센트, 데모 PALETTE.teal) */
+  --teal-1: #0FB2C4;
+  --teal-3: #0E9AA6;
+  --teal-ink: #0E8A99;
+  --teal-soft: #D6F5F7;
+
+  /* 표면/잉크 중립 스케일 */
+  --surface: #ffffff;
+  --canvas: #E4ECEF;
+  --panel: #F7FAFB;
+  --soft: #F1F5F6;
+  --soft2: #F6F8F9;
+  --line: #EAEFF1;
+  --line2: #EDF3F4;
+  --ink: #14343A;
+  --ink2: #41616A;
+  --muted-1: #7C949B;
+  --muted-2: #9DB0B5;
+  --muted-3: #B4C4C8;
+
+  /* ---- 3레일 시맨틱 (rail = 진하게 / soft = 배경 / ink = 텍스트) ----
+     이 세 색은 오직 레일 정체성에만 쓴다. 일반 UI 강조로 전용 금지. */
+  --rail-labor: #0FB2C4;          /* 🟦 노무 (청록) */
+  --rail-labor-soft: #D6F5F7;
+  --rail-labor-ink: #0E8A99;
+  --rail-secret: #8B5CF6;         /* 🟪 영업비밀 (보라) */
+  --rail-secret-soft: #ECE4F8;
+  --rail-secret-ink: #7C3AED;
+  --rail-security: #F59E0B;       /* 🟧 보안 (앰버) */
+  --rail-security-soft: #FDF1DC;
+  --rail-security-ink: #D97706;
+
+  /* ---- 상태/케이스유형 태그 ---- */
+  --status-danger: #E11D48;       /* 해고 · 리스크 알림 */
+  --status-danger-soft: #FCE4E7;
+  --status-warn: #D97706;         /* 권고사직 */
+  --status-warn-soft: #FDF1DC;
+  --status-info: #7C3AED;         /* 자발 */
+  --status-info-soft: #ECE4F8;
+  --status-ok: #22A06B;           /* 충족/성공 */
+  --status-ok-soft: #DCF5E9;
+
+  /* ---- L1/L2/L3 출처 배지 (§4 필수 요소) ---- */
+  --src-l1: #0E8A99;  --src-l1-bg: #D6F5F7;   /* 법령 (국가법령정보센터) */
+  --src-l2: #8B5CF6;  --src-l2-bg: #ECE4F8;   /* 판례·판정례 (중노위·대법원) */
+  --src-l3: #22A06B;  --src-l3-bg: #DCF5E9;   /* 정부 가이드 (고용부 매뉴얼) */
+
+  /* ---- 반경(radius) 스케일 ---- */
+  --radius-card: 20px;
+  --radius-btn: 12px;
+  --radius-chip: 11px;
+  --radius-badge: 9px;
+  --radius-xs: 7px;
+
+  /* ---- 그림자 ---- */
+  --shadow-card: 0 10px 30px rgba(30,60,68,0.05);
+  --shadow-menu: 0 16px 40px rgba(20,40,45,0.16);
+  --shadow-glow: 0 8px 18px var(--eg-glow);
+}
+
+.dark {
+  /* NEUTRAL_DARK (데모 원본) */
+  --background: #0f131a;
+  --foreground: #eef2f6;
+  --card: #1d232e;
+  --card-foreground: #eef2f6;
+  --popover: #1d232e;
+  --popover-foreground: #eef2f6;
+
+  --primary: #45577E;             /* 다크에선 네이비를 한 톤 밝게(가독) */
+  --primary-foreground: #ffffff;
+  --secondary: #232a36;
+  --secondary-foreground: #c2ccd4;
+  --muted: #1a212b;
+  --muted-foreground: #93a1ad;
+  --accent: color-mix(in srgb, #45577E 26%, #1d232e);
+  --accent-foreground: #eef2f6;
+  --destructive: #e11d48;
+  --destructive-foreground: #ffffff;
+
+  --border: #2c3440;
+  --input: #2c3440;
+  --ring: #6672E0;
+
+  --chart-1: #0FB2C4;
+  --chart-2: #8B5CF6;
+  --chart-3: #F59E0B;
+  --chart-4: #22A06B;
+  --chart-5: #6672E0;
+
+  --sidebar: #1d232e;
+  --sidebar-foreground: #eef2f6;
+  --sidebar-primary: #45577E;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #232a36;
+  --sidebar-accent-foreground: #c2ccd4;
+  --sidebar-border: #2c3440;
+  --sidebar-ring: #6672E0;
+
+  /* eg 스케일 (다크) */
+  --eg-1: #45577E;
+  --eg-2: #55678f;
+  --eg-3: #3C4E72;
+  --eg-4: #2F3F5D;
+  --eg-soft: color-mix(in srgb, #45577E 26%, #1d232e);
+  --eg-soft2: color-mix(in srgb, #45577E 15%, #1d232e);
+  --eg-glow: rgba(69,87,126,0.4);
+  --eg-glow-s: rgba(69,87,126,0.14);
+
+  --surface: #1d232e;
+  --canvas: #0f131a;
+  --panel: #161b24;
+  --soft: #232a36;
+  --soft2: #1a212b;
+  --line: #2c3440;
+  --line2: #2c3440;
+  --ink: #eef2f6;
+  --ink2: #c2ccd4;
+  --muted-1: #93a1ad;
+  --muted-2: #7f8d99;
+  --muted-3: #66727e;
+
+  /* 레일 — hue 유지, soft 는 다크 배경과 혼합 */
+  --rail-labor: #0FB2C4;
+  --rail-labor-soft: color-mix(in srgb, #0FB2C4 22%, #1d232e);
+  --rail-labor-ink: #4fd0de;
+  --rail-secret: #8B5CF6;
+  --rail-secret-soft: color-mix(in srgb, #8b5cf6 26%, #1d232e);
+  --rail-secret-ink: #b79cf8;
+  --rail-security: #F59E0B;
+  --rail-security-soft: color-mix(in srgb, #d97706 26%, #1d232e);
+  --rail-security-ink: #f0b45a;
+
+  --status-danger: #f2647f;
+  --status-danger-soft: color-mix(in srgb, #e11d48 24%, #1d232e);
+  --status-warn: #f0b45a;
+  --status-warn-soft: color-mix(in srgb, #d97706 26%, #1d232e);
+  --status-info: #b79cf8;
+  --status-info-soft: color-mix(in srgb, #8b5cf6 26%, #1d232e);
+  --status-ok: #4fc08a;
+  --status-ok-soft: color-mix(in srgb, #22a06b 26%, #1d232e);
+
+  --src-l1: #4fd0de;  --src-l1-bg: color-mix(in srgb, #0FB2C4 22%, #1d232e);
+  --src-l2: #b79cf8;  --src-l2-bg: color-mix(in srgb, #8b5cf6 26%, #1d232e);
+  --src-l3: #4fc08a;  --src-l3-bg: color-mix(in srgb, #22a06b 26%, #1d232e);
+
+  --shadow-card: 0 10px 30px rgba(0,0,0,0.35);
+  --shadow-menu: 0 16px 40px rgba(0,0,0,0.5);
+  --shadow-glow: 0 8px 18px var(--eg-glow);
+}
+
+/* =============================================================================
+   Tailwind v4 매핑 — bg-primary, text-rail-secret 등 유틸리티로 노출.
+   (v3면 이 블록 대신 tailwind.config theme.extend.colors 에 var(--...) 매핑)
+============================================================================= */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* 도메인 색 */
+  --color-rail-labor: var(--rail-labor);
+  --color-rail-labor-soft: var(--rail-labor-soft);
+  --color-rail-labor-ink: var(--rail-labor-ink);
+  --color-rail-secret: var(--rail-secret);
+  --color-rail-secret-soft: var(--rail-secret-soft);
+  --color-rail-secret-ink: var(--rail-secret-ink);
+  --color-rail-security: var(--rail-security);
+  --color-rail-security-soft: var(--rail-security-soft);
+  --color-rail-security-ink: var(--rail-security-ink);
+
+  --radius-lg: var(--radius-card);
+  --radius-md: var(--radius-btn);
+  --radius-sm: var(--radius-badge);
+
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+}
