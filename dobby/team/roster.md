@@ -8,18 +8,18 @@
 | 이름 | 역할 | 대본 (`dobby/agents/`) | 껍데기 (`.claude/agents/`) | 모델 티어 | 상태 |
 |---|---|---|---|---|---|
 | **도비 (Dobby)** | CEO · 총괄 오케스트레이터 | — (메인, `CLAUDE.md`) | — | Opus | ✅ 가동 |
-| **헤르미온느 (Hermione)** | 기획·명세 (Feature Spec) | `hermione.md` | `hermione.md` | Opus | ✅ 가동 |
+| **헤르미온느 (Hermione)** | 기획·설계 (Feature Spec + API Spec + Data Model) | `hermione.md` | `hermione.md` | Opus | ✅ 가동 |
+| **론 (Ron)** | 백엔드 (FastAPI/uv/PostgreSQL + AI 대조 엔진) | `ron.md` | `ron.md` | Sonnet | ✅ 가동 |
+| **해리 (Harry)** | 프론트엔드 (Next.js/shadcn) | `harry.md` | `harry.md` | Sonnet | ✅ 가동 |
+| **루나 (Luna)** | 디자이너 (디자인 시스템·토큰) | `luna.md` | `luna.md` | Opus | ✅ 가동 |
 
 ## 고용 예정 (해리포터 이름 — 역할 미확정, 대표님 지정 대기)
 
-> 필요 직군 예시(초안): 기획/PM, 프론트엔드(Next.js), 백엔드(FastAPI), AI/RAG 엔지니어, QA, 디자인.
 > 실제 이름·역할 배정은 대표님이 정한다. 아래는 자리만 잡아둔 것.
 
-| 후보 역할 | 이름(예: Harry / Ron / …) | 모델 티어(안) |
+| 후보 역할 | 이름(예: Snape / Neville / …) | 모델 티어(안) |
 |---|---|---|
-| 프론트엔드 | _미정_ | Sonnet |
-| 백엔드 | _미정_ | Sonnet |
-| AI/RAG | _미정_ | Opus |
+| AI/RAG 전담(론에서 분리 시) | _미정_ | Opus |
 | QA | _미정_ | Sonnet |
 
 ## 모델 티어 원칙
