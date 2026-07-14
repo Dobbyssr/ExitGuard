@@ -1,1 +1,4 @@
 .DS_Store
+
+# JetBrains IDE (개인 환경)
+.idea/
