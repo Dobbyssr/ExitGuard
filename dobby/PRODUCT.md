@@ -138,7 +138,7 @@
 |---|---|
 | 디자인 | **Claude Design** |
 | Frontend | **Next.js + shadcn/ui** |
-| Backend | **Python 3.13 · FastAPI · uv** |
+| Backend | **Python 3.12 · FastAPI · uv** |
 | DB | **PostgreSQL** |
 | Cache | **Redis** |
 

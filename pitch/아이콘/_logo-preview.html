@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ExitGuard 로고 — 시안 검토</title>
+<style>
+  :root{
+    --ink:#3C4E72; --teal:#0FB2C4; --purple:#8B5CF6; --amber:#F59E0B;
+    --bg:#F6F8F9; --panel:#FFFFFF; --line:#E1E8EA; --text:#1B2B30; --muted:#5C7077;
+    --darkbg:#0C1F24; --darkpanel:#132C33;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0C1F24; --panel:#132C33; --line:#20424B; --text:#E8F1F2; --muted:#8AA6AD;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0C1F24; --panel:#132C33; --line:#20424B; --text:#E8F1F2; --muted:#8AA6AD;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased; padding:40px 24px 80px;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:8px}
+  h1{font-size:24px;font-weight:800;letter-spacing:-.6px;margin:0}
+  .sub{color:var(--muted);font-size:13.5px;margin:6px 0 0}
+  .toggle{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px}
+  .toggle button{font:inherit;font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--muted);
+    padding:6px 12px;border-radius:7px;cursor:pointer}
+  .toggle button[aria-pressed="true"]{background:var(--teal);color:#fff}
+  .toggle button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+  section{margin-top:44px}
+  h2{font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);
+    margin:0 0 16px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .note{color:var(--muted);font-size:13px;margin:-8px 0 18px;max-width:640px}
+  b.k{color:var(--teal)}
+
+  .grid{display:grid;gap:16px}
+  .cols2{grid-template-columns:repeat(2,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:14px}
+  .card .cap{font-size:12.5px;color:var(--muted)}
+  .card .cap strong{color:var(--text);font-weight:700}
+
+  /* light/dark specimen tiles */
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .tile{border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:22px;border:1px solid var(--line)}
+  .tile.lite{background:#FFFFFF}
+  .tile.dark{background:#0C1F24;border-color:#20424B}
+  .tile .lbl{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .tile.lite .lbl{color:#8FA3A9}
+  .tile.dark .lbl{color:#6E8B92}
+  .sizes{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap}
+  .sz{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .sz span{font-size:10.5px;color:var(--muted)}
+  .tile.dark .sz span{color:#6E8B92}
+
+  .lockup{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .appicons{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+  .appicons .ai{display:flex;flex-direction:column;gap:8px;align-items:center}
+  .appicons .ai span{font-size:10.5px;color:var(--muted)}
+
+  .rationale{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .rationale ul{margin:8px 0 0;padding-left:18px}
+  .rationale li{margin:7px 0;font-size:14px}
+  .swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .sw{display:flex;flex-direction:column;gap:6px;align-items:center;font-size:11px;color:var(--muted)}
+  .sw i{width:44px;height:44px;border-radius:9px;border:1px solid var(--line);display:block}
+  .pick{border-color:var(--teal);box-shadow:0 0 0 2px rgba(15,178,196,.18)}
+  .badge{display:inline-block;font-size:11px;font-weight:700;color:var(--teal);background:rgba(15,178,196,.12);
+    border:1px solid rgba(15,178,196,.3);padding:3px 9px;border-radius:99px;margin-left:8px;vertical-align:middle}
+  @media (max-width:640px){ .cols2{grid-template-columns:1fr} .tiles{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>ExitGuard 로고 시안</h1>
+      <p class="sub">각진 기하학 G + 3레일 게이트 모노그램 · 벡터 SVG · 라이트/다크 검증</p>
+    </div>
+    <div class="toggle" role="group" aria-label="배경 테마">
+      <button id="bL" aria-pressed="false">라이트</button>
+      <button id="bD" aria-pressed="false">다크</button>
+      <button id="bS" aria-pressed="true">시스템</button>
+    </div>
+  </header>
+
+  <!-- ============ 확정안 ============ -->
+  <section>
+    <h2>확정안 — 각진 G + 시맨틱 3레일 <span class="badge">추천</span></h2>
+    <p class="note">
+      상단바는 오른쪽 끝까지 닫고 우상단 짧은 <b class="k">lip</b>으로 확실히 "G"로 읽히게,
+      우중앙 <b class="k">jaw(턱)</b>는 가운데 레일과 정확히 수평 정렬. 균일 획 두께, 각진 터미널.
+      3레일은 제품 3축 색(노무 청록 · 영업비밀 보라 · 보안 앰버)으로 G의 spine에 수렴한다.
+    </p>
+    <div class="tiles">
+      <div class="tile lite">
+        <div class="lbl">라이트 배경</div>
+        <div class="sizes" id="litesizes"></div>
+      </div>
+      <div class="tile dark">
+        <div class="lbl">다크 배경</div>
+        <div class="sizes" id="darksizes"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 워드마크 락업 ============ -->
+  <section>
+    <h2>워드마크 락업</h2>
+    <div class="tiles">
+      <div class="tile lite">
+        <div class="lbl">라이트</div>
+        <div class="lockup" id="wmLite"></div>
+      </div>
+      <div class="tile dark">
+        <div class="lbl">다크</div>
+        <div class="lockup" id="wmDark"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 앱아이콘 ============ -->
+  <section>
+    <h2>앱 아이콘 (라운드스퀘어)</h2>
+    <div class="card">
+      <div class="appicons" id="appicons"></div>
+      <div class="cap">브랜드 청록 타일에 흰색 반전 마크. iOS superellipse 근사 라운드(반경 22.4%).</div>
+    </div>
+  </section>
+
+  <!-- ============ 대안 시안 ============ -->
+  <section>
+    <h2>탐색한 대안 (비교용)</h2>
+    <p class="note">확정안과 나란히 두고 고르시면 됩니다. 마크 형태는 동일한 각진 G, 차이는 <b class="k">레일 색</b>과 <b class="k">개구부 각</b>입니다.</p>
+    <div class="grid cols2">
+      <div class="card">
+        <div id="altA" style="align-self:center"></div>
+        <div class="cap"><strong>A · 시맨틱 3색 (확정안)</strong><br>3축을 색으로 구분. 브랜드 임팩트·의미 전달 최고. 큰 크기/락업에서 강함.</div>
+      </div>
+      <div class="card">
+        <div id="altB" style="align-self:center"></div>
+        <div class="cap"><strong>B · 브랜드 청록 단색</strong><br>레일 3줄 모두 <b class="k">#0FB2C4</b>. 16~24px 초소형에서 가장 또렷·차분. 앱바 파비콘에 유리.</div>
+      </div>
+      <div class="card">
+        <div id="altC" style="align-self:center"></div>
+        <div class="cap"><strong>C · 원안 초록 단색</strong><br>스케치 원색 <b class="k">#0B7A55</b> 계열. 참고용 — 브랜드 청록과 어긋나 비추천.</div>
+      </div>
+      <div class="card">
+        <div id="altD" style="align-self:center"></div>
+        <div class="cap"><strong>D · 개방형 G (lip 제거)</strong><br>우상단을 더 열어 "게이트가 열린다" 은유 강조. 모던하나 초소형에서 C/O 오독 위험.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 근거 ============ -->
+  <section>
+    <h2>디자인 근거</h2>
+    <div class="rationale">
+      <ul>
+        <li><strong>왜 이 각(角)</strong> — 손그림의 둥근 곡선을 버리고 균일 획 두께(마크 좌표계 14)의 <b class="k">직각 터미널</b>로 재설계. 보안·컴플라이언스 제품에 필요한 '정확·견고'를 형태가 말한다.</li>
+        <li><strong>왜 이 구조</strong> — G의 우상단 lip으로 글자를 확정하고, jaw를 <b class="k">가운데 레일과 정렬</b>해 "3레일이 게이트로 모인다"는 제품 은유를 형태 안에 심었다. 장식이 아니라 의미.</li>
+        <li><strong>왜 이 색</strong> — 브랜드 청록 <b class="k">#0FB2C4</b> + 딥네이비 <b class="k">#3C4E72</b>. G는 딥네이비로 두어 라이트/다크 어디서도 흔들리지 않고, 레일이 유일한 채도 포인트(샤넬 룰: 액센트는 한 곳).</li>
+        <li><strong>양테마</strong> — 딥네이비 G는 다크 배경에서 흰색으로 반전(프리뷰에서 자동 처리). 레일 색은 두 배경 모두에서 대비 유지.</li>
+      </ul>
+      <div class="swatches">
+        <div class="sw"><i class="pick" style="background:#0FB2C4"></i>청록 · 노무<br>#0FB2C4</div>
+        <div class="sw"><i style="background:#8B5CF6"></i>보라 · 영업비밀<br>#8B5CF6</div>
+        <div class="sw"><i style="background:#F59E0B"></i>앰버 · 보안<br>#F59E0B</div>
+        <div class="sw"><i style="background:#3C4E72"></i>딥네이비 · G<br>#3C4E72</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+// ---- 마크 SVG 팩토리 (외부의존 0, 전부 인라인) ----
+function mark(opt){
+  var o = Object.assign({size:120, gcolor:'#3C4E72', open:false,
+    r1:'#0FB2C4', r2:'#8B5CF6', r3:'#F59E0B'}, opt||{});
+  var h = o.size*(100/120);
+  var lip = o.open ? '' : '<rect x="98" y="22" width="14" height="12"/>';
+  return ''
+  + '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="'+o.size+'" height="'+h+'" role="img" aria-label="ExitGuard">'
+  +   '<rect x="6" y="8"  width="36" height="14" fill="'+o.r1+'"/>'
+  +   '<rect x="6" y="43" width="36" height="14" fill="'+o.r2+'"/>'
+  +   '<rect x="6" y="78" width="36" height="14" fill="'+o.r3+'"/>'
+  +   '<g fill="'+o.gcolor+'">'
+  +     '<rect x="44" y="8"  width="14" height="84"/>'
+  +     '<rect x="44" y="8"  width="68" height="14"/>'
+  +     '<rect x="44" y="78" width="68" height="14"/>'
+  +     lip
+  +     '<rect x="98" y="43" width="14" height="49"/>'
+  +     '<rect x="70" y="43" width="42" height="14"/>'
+  +   '</g>'
+  + '</svg>';
+}
+function wordmark(size, ink, teal){
+  var s = size/64;
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64" width="'+(360*s)+'" height="'+size+'">'
+  + '<g transform="translate(0,2) scale(0.6)">'
+  +   '<rect x="6" y="8" width="36" height="14" fill="#0FB2C4"/>'
+  +   '<rect x="6" y="43" width="36" height="14" fill="#8B5CF6"/>'
+  +   '<rect x="6" y="78" width="36" height="14" fill="#F59E0B"/>'
+  +   '<g fill="'+ink+'"><rect x="44" y="8" width="14" height="84"/><rect x="44" y="8" width="68" height="14"/>'
+  +   '<rect x="44" y="78" width="68" height="14"/><rect x="98" y="22" width="14" height="12"/>'
+  +   '<rect x="98" y="43" width="14" height="49"/><rect x="70" y="43" width="42" height="14"/></g>'
+  + '</g>'
+  + '<text x="96" y="45" font-family="Pretendard,\'Apple SD Gothic Neo\',\'Helvetica Neue\',Arial,sans-serif" font-size="42" letter-spacing="-1.2">'
+  +   '<tspan fill="'+ink+'" font-weight="500">Exit</tspan><tspan fill="'+teal+'" font-weight="800">Guard</tspan>'
+  + '</text></svg>';
+}
+function appicon(size){
+  var s = size/1024;
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="'+size+'" height="'+size+'">'
+  + '<defs><linearGradient id="egbg'+size+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#12C1D4"/><stop offset="1" stop-color="#0E97A9"/></linearGradient></defs>'
+  + '<rect width="1024" height="1024" rx="229" fill="url(#egbg'+size+')"/>'
+  + '<g transform="translate(202,253.7) scale(5.1667)">'
+  +   '<rect x="6" y="8" width="36" height="14" fill="#FFFFFF"/><rect x="6" y="43" width="36" height="14" fill="#E7DBFB"/><rect x="6" y="78" width="36" height="14" fill="#FCE9C6"/>'
+  +   '<g fill="#FFFFFF"><rect x="44" y="8" width="14" height="84"/><rect x="44" y="8" width="68" height="14"/><rect x="44" y="78" width="68" height="14"/>'
+  +   '<rect x="98" y="22" width="14" height="12"/><rect x="98" y="43" width="14" height="49"/><rect x="70" y="43" width="42" height="14"/></g>'
+  + '</g></svg>';
+}
+
+var SIZES = [16,24,48,128];
+function fillSizes(el, gcolor){
+  el.innerHTML = SIZES.map(function(s){
+    return '<div class="sz">'+mark({size:s, gcolor:gcolor})+'<span>'+s+'px</span></div>';
+  }).join('');
+}
+fillSizes(document.getElementById('litesizes'), '#3C4E72');
+fillSizes(document.getElementById('darksizes'), '#FFFFFF');
+
+document.getElementById('wmLite').innerHTML = wordmark(44,'#3C4E72','#0FB2C4');
+document.getElementById('wmDark').innerHTML = wordmark(44,'#FFFFFF','#25D2E4');
+
+document.getElementById('appicons').innerHTML = [120,80,56].map(function(s){
+  return '<div class="ai">'+appicon(s)+'<span>'+s+'px</span></div>';
+}).join('');
+
+document.getElementById('altA').innerHTML = mark({size:120});
+document.getElementById('altB').innerHTML = mark({size:120, r1:'#0FB2C4', r2:'#0FB2C4', r3:'#0FB2C4'});
+document.getElementById('altC').innerHTML = mark({size:120, r1:'#0B7A55', r2:'#0B7A55', r3:'#0B7A55'});
+document.getElementById('altD').innerHTML = mark({size:120, open:true});
+
+// ---- 테마 토글 (미디어쿼리 override) ----
+var root = document.documentElement;
+var bL=document.getElementById('bL'), bD=document.getElementById('bD'), bS=document.getElementById('bS');
+function setTheme(mode){
+  if(mode==='system'){ root.removeAttribute('data-theme'); }
+  else { root.setAttribute('data-theme', mode); }
+  bL.setAttribute('aria-pressed', mode==='light');
+  bD.setAttribute('aria-pressed', mode==='dark');
+  bS.setAttribute('aria-pressed', mode==='system');
+}
+bL.onclick=function(){setTheme('light')};
+bD.onclick=function(){setTheme('dark')};
+bS.onclick=function(){setTheme('system')};
+</script>
+</body>
+</html>

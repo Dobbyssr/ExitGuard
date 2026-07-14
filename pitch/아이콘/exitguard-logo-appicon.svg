@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="ExitGuard app icon">
+  <title>ExitGuard</title>
+  <defs>
+    <linearGradient id="eg-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12C1D4"/>
+      <stop offset="1" stop-color="#0E97A9"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1024" height="1024" rx="229" ry="229" fill="url(#eg-bg)"/>
+  <!-- Mark reversed to white on the brand tile. Rails stay semantic-tinted but lightened for contrast -->
+  <g transform="translate(202,253.7) scale(5.1667)">
+    <rect x="6" y="8"  width="36" height="14" fill="#FFFFFF"/>
+    <rect x="6" y="43" width="36" height="14" fill="#E7DBFB"/>
+    <rect x="6" y="78" width="36" height="14" fill="#FCE9C6"/>
+    <g fill="#FFFFFF">
+      <rect x="44" y="8"  width="14" height="84"/>
+      <rect x="44" y="8"  width="68" height="14"/>
+      <rect x="44" y="78" width="68" height="14"/>
+      <rect x="98" y="22" width="14" height="12"/>
+      <rect x="98" y="43" width="14" height="49"/>
+      <rect x="70" y="43" width="42" height="14"/>
+    </g>
+  </g>
+</svg>

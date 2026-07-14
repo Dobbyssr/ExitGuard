@@ -1,3 +1,5 @@
+<img src="pitch/아이콘/exitguard-logo.png" alt="ExitGuard" width="240">
+
 # ExitGuard
 
 > 퇴사하는 순간의 리스크를, 하나의 게이트로.
