@@ -114,11 +114,11 @@
 | 위치 | 내용 | 라이브 |
 |---|---|---|
 | `README.md` | 프로젝트 소개·문제·솔루션·데모 링크 (정비 완료) | — |
-| `소개페이지/EixtGuard_소개페이지.html` (+`assets/`) | 문제→게이트→작동→근거 랜딩 페이지 | [GitHub Pages](https://dobbyssr.github.io/ExitGuard/%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80/EixtGuard_%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80.html) |
-| `데모/ExitGuard-나모업로드-단일본.html` | 클릭 데모(단일 HTML) | [GitHub Pages](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html) |
-| `데모/ExitGuard 통합 (standalone).html` | 통합본 데모(6뷰 SPA) | — |
-| `데모/ExitGuard 플로우 워크스루.pdf` | 화면 흐름 워크스루 | [PDF](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard%20%ED%94%8C%EB%A1%9C%EC%9A%B0%20%EC%9B%8C%ED%81%AC%EC%8A%A4%EB%A3%A8.pdf) |
-| `사업계획서/ExitGuard-사업계획서.html` · `.pdf` | 예선 제출 사업계획서 | — |
+| `pitch/소개페이지/EixtGuard_소개페이지.html` (+`assets/`) | 문제→게이트→작동→근거 랜딩 페이지 | [GitHub Pages](https://dobbyssr.github.io/ExitGuard/pitch/%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80/EixtGuard_%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80.html) |
+| `pitch/데모/ExitGuard-나모업로드-단일본.html` | 클릭 데모(단일 HTML) | [GitHub Pages](https://dobbyssr.github.io/ExitGuard/pitch/%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html) |
+| `pitch/데모/ExitGuard 통합 (standalone).html` | 통합본 데모(6뷰 SPA) | — |
+| `pitch/데모/ExitGuard 플로우 워크스루.pdf` | 화면 흐름 워크스루 | [PDF](https://dobbyssr.github.io/ExitGuard/pitch/%EB%8D%B0%EB%AA%A8/ExitGuard%20%ED%94%8C%EB%A1%9C%EC%9A%B0%20%EC%9B%8C%ED%81%AC%EC%8A%A4%EB%A3%A8.pdf) |
+| `pitch/사업계획서/ExitGuard-사업계획서.html` · `.pdf` | 예선 제출 사업계획서 | — |
 
 > ⚠️ 파일명 오타: 소개페이지 파일이 `EixtGuard_...`(Eixt)로 되어 있음. 라이브 링크가 이 이름에 걸려 있어 지금 바꾸면 링크가 깨진다 — 손대려면 링크까지 함께.
 

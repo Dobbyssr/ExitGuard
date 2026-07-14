@@ -14,7 +14,7 @@
 - 부서별 엑셀에 흩어진 마지막 체크를 **단일 관문·단일 책임자** 아래로 모은다
 - **세 레일을 모두 통과해야 퇴사 승인** · 그룹웨어 read-only 연동 · 법정 근거 기반
 
-▶️ **[소개 페이지 바로 보기](https://dobbyssr.github.io/ExitGuard/%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80/EixtGuard_%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80.html)**
+▶️ **[소개 페이지 바로 보기](https://dobbyssr.github.io/ExitGuard/pitch/%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80/EixtGuard_%EC%86%8C%EA%B0%9C%ED%8E%98%EC%9D%B4%EC%A7%80.html)**
 
 ## 문제 — 나가는 직원은 칼 두 개를 겨눈다
 직원이 퇴사하는 순간, 회사는 두 가지 위협을 동시에 마주합니다.
@@ -48,13 +48,13 @@
 ## 데모
 
 브라우저에서 바로 실행되는 라이브 데모 (GitHub Pages):
-- ▶️ **[데모 화면 (나모업로드 단일본)](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html)** — 단일본
-- 📄 **[플로우 워크스루 (PDF)](https://dobbyssr.github.io/ExitGuard/%EB%8D%B0%EB%AA%A8/ExitGuard%20%ED%94%8C%EB%A1%9C%EC%9A%B0%20%EC%9B%8C%ED%81%AC%EC%8A%A4%EB%A3%A8.pdf)** — 화면 흐름 워크스루
+- ▶️ **[데모 화면 (나모업로드 단일본)](https://dobbyssr.github.io/ExitGuard/pitch/%EB%8D%B0%EB%AA%A8/ExitGuard-%EB%82%98%EB%AA%A8%EC%97%85%EB%A1%9C%EB%93%9C-%EB%8B%A8%EC%9D%BC%EB%B3%B8.html)** — 단일본
+- 📄 **[플로우 워크스루 (PDF)](https://dobbyssr.github.io/ExitGuard/pitch/%EB%8D%B0%EB%AA%A8/ExitGuard%20%ED%94%8C%EB%A1%9C%EC%9A%B0%20%EC%9B%8C%ED%81%AC%EC%8A%A4%EB%A3%A8.pdf)** — 화면 흐름 워크스루
 
-> `데모/` 폴더의 HTML을 내려받아 브라우저에서 직접 열어도 됩니다.
+> `pitch/데모/` 폴더의 HTML을 내려받아 브라우저에서 직접 열어도 됩니다.
 
 ## 사업계획서
-`사업계획서/` — 상세 사업계획서 (HTML · PDF)
+`pitch/사업계획서/` — 상세 사업계획서 (HTML · PDF)
 
 ## 상태
 지란지교 해커톤 2026 STEP1 출품작 (프로토타입). 계열사 SSR 인사팀 실사용자 인터뷰로 1차 검증.
