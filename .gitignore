@@ -8,3 +8,6 @@
 .venv/
 __pycache__/
 *.pyc
+
+# 로컬 환경변수 (커밋 금지 — .env.example만 공유)
+.env
