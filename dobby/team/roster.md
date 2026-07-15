@@ -12,6 +12,7 @@
 | **론 (Ron)** | 백엔드 (FastAPI/uv/PostgreSQL + AI 대조 엔진) | `ron.md` | `ron.md` | Sonnet | ✅ 가동 |
 | **해리 (Harry)** | 프론트엔드 (Next.js/shadcn) | `harry.md` | `harry.md` | Sonnet | ✅ 가동 |
 | **루나 (Luna)** | 디자이너 (디자인 시스템·토큰) | `luna.md` | `luna.md` | Opus | ✅ 가동 |
+| **무디 (Moody)** | QA 검증 (테스트케이스·이슈 리포트) | `moody.md` | `moody.md` | Sonnet | ✅ 가동 |
 
 ## 고용 예정 (해리포터 이름 — 역할 미확정, 대표님 지정 대기)
 
@@ -20,7 +21,6 @@
 | 후보 역할 | 이름(예: Snape / Neville / …) | 모델 티어(안) |
 |---|---|---|
 | AI/RAG 전담(론에서 분리 시) | _미정_ | Opus |
-| QA | _미정_ | Sonnet |
 
 ## 모델 티어 원칙
 

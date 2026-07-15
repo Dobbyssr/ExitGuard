@@ -10,3 +10,7 @@
 ## 고용된 직원
 
 - `hermione.md` — **헤르미온느**, 기획·명세(Feature Spec) 담당 (Opus).
+- `ron.md` — **론**, 백엔드 구현 담당 (Sonnet).
+- `harry.md` — **해리**, 프론트엔드 구현 담당 (Sonnet).
+- `luna.md` — **루나**, 디자인 시스템 담당 (Opus).
+- `moody.md` — **무디**, QA 검증 담당 (Sonnet).
