@@ -62,11 +62,13 @@
 3요소 bool에서 기계적으로 계산한다. **법적 판단이 아니라 요소 대조 결과다.**
 
 ```
-missing = { not secret_mark, not re_pledge, not access_control }
+# 결여 요소의 개수(count)로 계산한다. 집합(set)이 아니라 개수다.
+# (bool을 set literal로 넣으면 값이 겹칠 때 중복 제거되어 개수가 왜곡됨 — 주의)
+missing_count = int(not secret_mark) + int(not re_pledge) + int(not access_control)
 
-if len(missing) == 0:                protection_status = met
+if missing_count == 0:               protection_status = met
 elif not access_control:             protection_status = unmet          # 전원 접근 = 비밀관리성 핵심 요소 결여
-elif len(missing) >= 2:              protection_status = unmet
+elif missing_count >= 2:             protection_status = unmet
 elif not re_pledge (유일 결여):       protection_status = re_pledge_needed
 elif not secret_mark (유일 결여):     protection_status = mark_needed
 ```
