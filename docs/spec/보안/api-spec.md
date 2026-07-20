@@ -9,7 +9,7 @@
 
 ## 1. `GET /cases/{id}/rails/security` — 보안 레일 상세 (SEC-01·02) `[both]`
 
-코어 뼈대 응답 `{ rail, completion, items, compare, badges }` + SEC 고유 `anomaly_exports`·`recovery_progress`·`boundary_notice` 확장.
+코어 뼈대 응답 `{ rail, completion, items, compare, badges }` + SEC 고유 `anomaly_exports`·`recovery_progress`·`rail_notice` 확장.
 
 **응답 200 `data`**:
 ```json
@@ -37,7 +37,7 @@
   "badges": [
     { "tier": "L3", "title": "ISMS-P 인증기준 2.2.5 퇴직 및 직무변경 관리", "url": "https://www.privacy.go.kr/front/bbs/bbsView.do?bbsNo=BBSMSTR_000000000049&bbscttNo=20677", "version": "v2023.11" }
   ],
-  "boundary_notice": "체크리스트는 회수 실행이 아닌 확인 기록입니다."
+  "rail_notice": "체크리스트는 회수 실행이 아닌 확인 기록입니다."
 }
 ```
 
@@ -45,7 +45,7 @@
 - `anomaly_exports` = `AnomalyExportLog`(data-model §3, 시뮬). 데모: 퇴사 통보 후 30일 내 4.2GB 1건.
 - `recovery_progress` = 데모 진행률(계정 2/3·SaaS 1/2·기기 2/2·88%). `completion` = 코어 `Gate.rail_completion["security"]`(§5 파생) — **레일 재계산 금지**.
 - `compare` = **항상 빈 배열(`[]`)**. SEC는 판례·판정례 대조(compare) 대상이 아니다(대조 레일은 TS·노무). 다만 코어 §3 3레일 공통 뼈대 응답 `{ rail, completion, items, compare, badges }` 형태를 유지하기 위해 키는 존재시켜, FE가 3레일 응답을 동일 로직으로 순회할 때 키 부재로 깨지지 않게 한다.
-- **`boundary_notice` 필수(SEC-04)**: `"체크리스트는 회수 실행이 아닌 확인 기록입니다."`(데모 verbatim). 회수 항목이 확인 기록임을 명세·응답에 강제.
+- **`rail_notice` 필수(SEC-04)**: `"체크리스트는 회수 실행이 아닌 확인 기록입니다."`(데모 verbatim). 회수 항목이 확인 기록임을 명세·응답에 강제. **`rail_notice`(레일 상세 배너) ≠ `CompareResult.boundary_notice`(코어 §6-3 대조 고정문구)** — 필드명 분리(코어 §9-P (j) C3). SEC는 compare 대상이 아니므로 boundary_notice 없음.
 - 404 `NOT_FOUND`.
 
 > **SEC-01(회수 체크리스트)** = `items` + `recovery_progress`. **SEC-02(이상반출 이력)** = `anomaly_exports`. 별도 엔드포인트 불요(이 응답에 포함).
@@ -73,7 +73,7 @@
 |---|---|
 | SEC-01 계정·SaaS·기기 회수 체크리스트 | `GET …/rails/security` → `items`·`recovery_progress` + 코어 `submit`/`review`(상신→확인) |
 | SEC-02 이상반출 이력 | 동 응답 `anomaly_exports`(4.2GB 시뮬) |
-| (SEC-04 경계) | 응답 `boundary_notice` 필수 |
+| (SEC-04 경계) | 응답 `rail_notice` 필수 |
 
 ---
 
