@@ -9,6 +9,13 @@ from alembic import context
 from app.config import settings
 from app.db import Base
 
+# 모든 도메인 모델을 import해야 Base.metadata에 테이블이 등록된다(import 안 하면
+# autogenerate 눈에 안 보임). 실제 사용처는 없고 등록(side effect)이 목적이라 noqa.
+from app.domains.case import models as _case_models  # noqa: F401
+from app.domains.catalog import models as _catalog_models  # noqa: F401
+from app.domains.evidence import models as _evidence_models  # noqa: F401
+from app.domains.user import models as _user_models  # noqa: F401
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
