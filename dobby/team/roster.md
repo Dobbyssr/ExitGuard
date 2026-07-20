@@ -13,6 +13,7 @@
 | **해리 (Harry)** | 프론트엔드 (Next.js/shadcn) | `harry.md` | `harry.md` | Sonnet | ✅ 가동 |
 | **루나 (Luna)** | 디자이너 (디자인 시스템·토큰) | `luna.md` | `luna.md` | Opus | ✅ 가동 |
 | **무디 (Moody)** | QA 검증 (테스트케이스·이슈 리포트) | `moody.md` | `moody.md` | Sonnet | ✅ 가동 |
+| **스네이프 (Snape)** | DB 공학 감수·자문 (정규화·인덱스·쿼리성능·무결성 리뷰) | `snape.md` | `snape.md` | Opus | ✅ 가동 |
 
 ## 고용 예정 (해리포터 이름 — 역할 미확정, 대표님 지정 대기)
 

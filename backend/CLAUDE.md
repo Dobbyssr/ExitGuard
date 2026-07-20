@@ -107,6 +107,7 @@ app/
 ## 11. 신규 도메인 절차 (순서 고정)
 
 `models → schemas → repository → service → dependencies → router → main.include_router → alembic --autogenerate`. router에서 provider 쓰기 전에 `dependencies.py`를 먼저 만든다.
+> **DB 감수 게이트**: DB 산출물(`models`·Alembic 마이그레이션·비자명한 쿼리)은 도비 최종 승인 전 **스네이프 DB 감수**(정규화·인덱스·쿼리성능·무결성)를 거친다.
 
 ## 12. 네이밍
 
