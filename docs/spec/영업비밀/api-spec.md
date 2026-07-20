@@ -40,7 +40,7 @@
   "compare": [ /* CompareResult (TS-05, §3) */ ],
   "badges": [
     { "tier": "L1", "title": "부정경쟁방지법 제2조", "url": "https://law.go.kr/...", "version": "v2026.06" },
-    { "tier": "L2", "title": "영업비밀 비밀관리성 판단 기준", "url": "...", "version": "v2026.06" },
+    { "tier": "L2", "title": "대법원 2008도3435 판결 (비밀관리성 판단 기준)", "url": "https://casenote.kr/대법원/2008도3435", "version": "v2026.06" },
     { "tier": "L3", "title": "특허청 영업비밀 관리 매뉴얼", "url": "...", "version": "v2026.06" }
   ]
 }

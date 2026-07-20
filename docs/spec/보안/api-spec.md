@@ -35,7 +35,7 @@
   ],
   "compare": [],
   "badges": [
-    { "tier": "L1", "title": "정보통신망법 제28조", "url": "https://law.go.kr/...", "version": "v2026.07" }
+    { "tier": "L3", "title": "ISMS-P 인증기준 2.2.5 퇴직 및 직무변경 관리", "url": "https://www.privacy.go.kr/front/bbs/bbsView.do?bbsNo=BBSMSTR_000000000049&bbscttNo=20677", "version": "v2023.11" }
   ],
   "boundary_notice": "체크리스트는 회수 실행이 아닌 확인 기록입니다."
 }
