@@ -78,7 +78,7 @@ risk_count(security 기여) = count(blocking & status ∉ {approved,na}) = 0   #
 | `id` | int/uuid | ● | PK |
 | `case_id` | FK→Case | ● | 소속 케이스(코어 FK 규약) |
 | `detected_at` | datetime | ● | 감지 일시(퇴사 통보 후 30일 내) |
-| `size_bytes` | int | ● | 반출 용량 — 데모 **4.2GB** |
+| `size_bytes` | bigint | ● | 반출 용량 — 데모 **4.2GB**(≈45억 bytes). **64-bit 필수**: int32(21억) 초과 → 코어 §0 타입 범례 준수(BIGINT). |
 | `size_label` | str | ● | 표시값 — `"4.2GB"` |
 | `window_days` | int | ● | 감지 기간 — `30`(최근 30일) |
 | `description` | str | ● | 예: "대용량 다운로드 1건" |
