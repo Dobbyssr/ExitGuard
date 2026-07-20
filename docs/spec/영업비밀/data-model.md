@@ -111,14 +111,37 @@ Item.detail (rail=trade_secret) {
 }
 ```
 
-**데모 정합 TS 검사항목(항목코드 S- · 코어 `Item`으로 생성)**:
-| code | name | kind | status(데모) | detail.requirement_focus |
-|---|---|---|---|---|
-| `S-02` | 퇴직 비밀유지 재서약 | 내규(`internal`) | `submitted`→`approved` | `re_pledge` |
-| `S-07` | 핵심도면·API키 반출자료 회수 | 권고(`recommended`) | `pending` | `asset_recovery` |
-| `S-01` | 비밀표시 점검 | 내규 | (템플릿) | `secret_mark` |
-| `S-03` | 접근권한 말소 | 내규 | (템플릿) | `access_control` |
-| `S-05` | 개인기기 자료 삭제 확인 | 내규 | (템플릿) | `asset_recovery` |
+**데모 정합 TS 검사항목(항목코드 S- · 코어 `Item`으로 생성)** — 기본 영업비밀 템플릿 5항목(결번 S-04·S-06은 커스텀 예약):
+| code | name | kind | blocking | status(freeze) | detail.requirement_focus |
+|---|---|---|---|---|---|
+| `S-01` | 비밀표시 점검 | 내규(`internal`) | false | `approved` | `secret_mark` |
+| `S-02` | 퇴직 비밀유지 재서약 | 내규(`internal`) | false | `submitted` | `re_pledge` |
+| `S-03` | 접근권한 말소 | 내규(`internal`) | false | `approved` | `access_control` |
+| `S-05` | 개인기기 자료 삭제 확인 | 내규(`internal`) | false | `submitted` | `asset_recovery` |
+| `S-07` | 핵심도면·API키 반출자료 회수 | 권고(`recommended`) | false | `pending` | `asset_recovery` |
+
+### 3-1. 데모 5행 전수 대조 (캘리브레이션 knob — 시드가 40%를 재현해야 함) ★
+
+주인공 **김민준** 영업비밀 레일:
+
+| code | kind | blocking | status | 3-상태 | §5 집계 | risk 기여? |
+|---|---|---|---|---|---|---|
+| `S-01` | internal | false | `approved` | 충족 | applicable·approved | no |
+| `S-02` | internal | false | `submitted` | 미충족(상신검토필요) | applicable | no (blocking=false) |
+| `S-03` | internal | false | `approved` | 충족 | applicable·approved | no |
+| `S-05` | internal | false | `submitted` | 미충족(상신검토필요) | applicable | no (blocking=false) |
+| `S-07` | recommended | false | `pending` | 미충족(대기) | applicable | no (blocking=false) |
+
+**코어 게이트 파생(§5식 그대로)**:
+```
+applicable(trade_secret) = count(status != na) = 5        # na 없음
+approved(trade_secret)   = count(status == approved) = 2   # S-01·S-03
+rail_completion[trade_secret] = round(100 * 2 / 5) = 40%   # TS 레일 완료율
+risk_count(trade_secret 기여) = count(blocking & status ∉ {approved,na}) = 0   # 전 항목 blocking=false
+```
+
+> **시드 정합 규약**: 데모 HTML `secretItems`(4344-4348)는 **행동이 필요한 3항목**(S-02 submitted·S-05 submitted·S-07 pending)만 큐레이션 노출한다(노무 리스크 카드가 6항목 중 1건만 하이라이트하는 것과 동일 패턴). 레일 템플릿 전체는 5항목이며, 미노출 2항목(S-01·S-03)은 `approved` 상태(시드 knob)로 채워 §5식 `round(100*2/5)=40%`(데모 KPI)를 결정론적으로 재현한다. S-02·S-05·S-07(데모 verbatim)·완료율 40%는 정본, S-01·S-03 상태는 40% 재현용 튜닝 knob.
+> **S-05 상태 주의**: 데모는 S-05를 `submitted`(대상자 확인서 제출·확인 필요)로 노출한다 — `pending` 아님. freeze는 데모값을 따른다.
 
 - S-02 sub(데모): "대상자 전자서명 상신 · 확인 필요" → 확인 시 "전자서명 확인 완료".
 - S-07 sub(데모): "접근 자산 13건 중 보호요건 미충족 4건".

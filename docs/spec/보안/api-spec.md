@@ -15,12 +15,12 @@
 ```json
 {
   "rail": "security",
-  "completion": 88,
+  "completion": 67,
   "recovery_progress": {
     "account": { "recovered": 2, "total": 3 },
     "saas":    { "recovered": 1, "total": 2 },
     "device":  { "recovered": 2, "total": 2 },
-    "overall_percent": 88
+    "overall_percent": 67
   },
   "items": [
     { "id": "i-c11", "code": "C-11", "name": "이메일 계정 (Google Workspace)", "kind": "internal",
@@ -43,7 +43,7 @@
 
 - `items` = 코어 `Item`(rail=security, code C-) + SEC `detail`(data-model §2). 회수 6건.
 - `anomaly_exports` = `AnomalyExportLog`(data-model §3, 시뮬). 데모: 퇴사 통보 후 30일 내 4.2GB 1건.
-- `recovery_progress` = 데모 진행률(계정 2/3·SaaS 1/2·기기 2/2·88%). `completion` = 코어 `Gate.rail_completion["security"]`(§5 파생) — **레일 재계산 금지**.
+- `recovery_progress` = 데모 진행률(계정 2/3·SaaS 1/2·기기 2/2 = 회수 **서사 표기**). `completion` = 코어 `Gate.rail_completion["security"]`(§5 파생 = 항목 4/6 approved = **67%**, data-model §2-2) — **레일 재계산 금지**. `overall_percent`는 별도 산출이 아니라 `completion`(§5)을 그대로 미러링한다(회수 카운트 5/7가 아니라 항목 상태 4/6이 재현 가능한 진실 — 이중 진실원 방지).
 - `compare` = **항상 빈 배열(`[]`)**. SEC는 판례·판정례 대조(compare) 대상이 아니다(대조 레일은 TS·노무). 다만 코어 §3 3레일 공통 뼈대 응답 `{ rail, completion, items, compare, badges }` 형태를 유지하기 위해 키는 존재시켜, FE가 3레일 응답을 동일 로직으로 순회할 때 키 부재로 깨지지 않게 한다.
 - **`rail_notice` 필수(SEC-04)**: `"체크리스트는 회수 실행이 아닌 확인 기록입니다."`(데모 verbatim). 회수 항목이 확인 기록임을 명세·응답에 강제. **`rail_notice`(레일 상세 배너) ≠ `CompareResult.boundary_notice`(코어 §6-3 대조 고정문구)** — 필드명 분리(코어 §9-P (j) C3). SEC는 compare 대상이 아니므로 boundary_notice 없음.
 - 404 `NOT_FOUND`.

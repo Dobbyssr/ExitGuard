@@ -2,7 +2,7 @@
 
 > **문서 성격** — 코어(`../data-model.md`)를 import만 하고 보안 레일 고유 데이터(회수 체크리스트·이상반출 로그)만 보강한다. **대부분 시뮬데이터 → 가볍게.**
 > **뼈대 재정의 금지** — `Case`·`Item`·`Approval`·`Evidence`·`Standard`·`Gate`·enum·상태머신은 코어 그대로.
-> **근거 SSOT** — 데모: 회수 항목 6건 + 이상반출 1건(4.2GB) + 진행률 88%(계정 2/3·SaaS 1/2·기기 2/2). 창작 금지.
+> **근거 SSOT** — 데모: 회수 항목 6건 + 이상반출 1건(4.2GB) + 완료율 67%(§5 항목 4/6 approved 파생 · 회수 표기 계정 2/3·SaaS 1/2·기기 2/2). 창작 금지.
 > **레일 코드** — `security` (접두어 SEC · 항목코드 `C-`).
 > **작성**: 헤르미온느 · **작성일**: 2026-07-16
 
@@ -32,18 +32,40 @@ Item.detail (rail=security) {
 }
 ```
 
-**데모 정합 회수 항목 6건**:
-| code | name | recovery_category | status(데모) |
-|---|---|---|---|
-| `C-11` | 이메일 계정 (Google Workspace) | `account` | `approved`(회수 완료) |
-| `C-12` | VPN 접근 | `account` | `approved` |
-| `C-01` | GitHub 조직 권한 | `account` | `submitted`→`approved` |
-| `C-21` | Slack | `saas` | `approved` |
-| `C-02` | Figma · Notion | `saas` | `submitted`→`approved` |
-| `C-31` | 노트북 · 보안키 반납 | `device` | `approved` |
+**데모 정합 회수 항목 6건**(모두 `internal` · `blocking=false`):
+| code | name | recovery_category | kind | blocking | status(데모 스냅샷) |
+|---|---|---|---|---|---|
+| `C-11` | 이메일 계정 (Google Workspace) | `account` | internal | false | `approved`(회수 완료) |
+| `C-12` | VPN 접근 | `account` | internal | false | `approved` |
+| `C-01` | GitHub 조직 권한 | `account` | internal | false | `submitted`(회수 상신·확인 필요) |
+| `C-21` | Slack | `saas` | internal | false | `approved` |
+| `C-02` | Figma · Notion | `saas` | internal | false | `submitted`(회수 상신·확인 필요) |
+| `C-31` | 노트북 · 보안키 반납 | `device` | internal | false | `approved` |
 
-- **회수 진행률(데모, SEC-03 참고)**: 계정 **2/3** · SaaS **1/2** · 기기 **2/2** → **88%**(노트북·보안키 = 기기 2건). 코어 `Gate.rail_completion["security"]`(§5 파생)으로 표현 — 레일 재계산 금지. 데모 게이트 시드 `security 88%`(유비쿼터스 §10).
-- **kind**: 데모 회수 항목은 내규(`internal`, `blocking=false`) 위주.
+> 데모 스냅샷 = 데모 HTML `securityItems`(4349-4356) verbatim: C-11·C-12·C-21·C-31 `done`(approved) 4건, C-01·C-02 `submitted` 2건. ("→approved"는 검토 확인 후 전이 결과 — 스냅샷 시점 값은 `submitted`.)
+
+### 2-2. 데모 6행 전수 대조 (캘리브레이션 knob — 시드가 이 표를 재현해야 함) ★
+
+주인공 **김민준** 보안 레일:
+
+| code | kind | blocking | status | §5 집계 반영 | risk 기여? |
+|---|---|---|---|---|---|
+| `C-11` | internal | false | `approved` | applicable·approved | no |
+| `C-12` | internal | false | `approved` | applicable·approved | no |
+| `C-01` | internal | false | `submitted` | applicable | no (blocking=false) |
+| `C-21` | internal | false | `approved` | applicable·approved | no |
+| `C-02` | internal | false | `submitted` | applicable | no (blocking=false) |
+| `C-31` | internal | false | `approved` | applicable·approved | no |
+
+**코어 게이트 파생(§5식 그대로)**:
+```
+applicable(security) = count(status != na) = 6          # na 없음
+approved(security)   = count(status == approved) = 4     # C-11·C-12·C-21·C-31
+rail_completion[security] = round(100 * 4 / 6) = 67%     # 보안 레일 완료율
+risk_count(security 기여) = count(blocking & status ∉ {approved,na}) = 0   # 전 항목 blocking=false
+```
+
+- **회수 진행률(데모, SEC-03 참고)**: 화면 표기 계정 **2/3** · SaaS **1/2** · 기기 **2/2**는 데모 **서사 표기**(기기는 노트북+보안키 2건을 C-31 1항목으로 묶어 2/2로 연출 — 항목 수 6과 별개). **레일 완료율의 재현 가능한 진실은 항목 상태 기반 §5식(4/6=67%)**이며, `Gate.rail_completion["security"]`으로 표현 — 레일 재계산 금지. 데모 게이트 시드 `security 67%`(유비쿼터스 §10). (종전 88%는 6항목 구조 `round(100*k/6)`이 산출 불가능한 정적 연출값이었다 — 2026-07-20 §5 재현값 67%로 정정.)
 
 ---
 
