@@ -1,10 +1,21 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.db import init_db
+from app.db import engine
 from app.routers import health
 
-app = FastAPI(title="ExitGuard API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """앱 시작/종료 훅. DB 엔진은 db.py에서 lazy 생성되므로 종료 시 dispose만 책임진다."""
+    yield
+    await engine.dispose()
+
+
+app = FastAPI(title="ExitGuard API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,12 +25,3 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
-
-
-@app.on_event("startup")
-def on_startup() -> None:
-    # DB가 아직 안 떠 있어도 앱은 부팅되어야 한다 (/health가 degraded로 보고).
-    try:
-        init_db()
-    except Exception:
-        pass

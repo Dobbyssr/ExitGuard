@@ -4,9 +4,17 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.13.2",
+    "asyncpg>=0.29.0",
     "fastapi>=0.139.0",
-    "pg8000>=1.31.5",
+    "pydantic>=2.9.0",
     "pydantic-settings>=2.14.2",
-    "sqlmodel>=0.0.39",
+    "sqlalchemy[asyncio]>=2.0.35",
     "uvicorn[standard]>=0.51.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.0",
+    "ruff>=0.15.22",
 ]

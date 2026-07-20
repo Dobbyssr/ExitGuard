@@ -1,18 +1,18 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from sqlalchemy import text
-from sqlmodel import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db import engine
+from app.db import get_db
 
 router = APIRouter()
 
 
 @router.get("/health")
-def health() -> dict:
+async def health(db: AsyncSession = Depends(get_db)) -> dict:
+    """앱 부팅 여부와 DB 연결 상태를 함께 보고한다. DB가 죽어 있어도 앱 자체는 ok."""
     db_status = "ok"
     try:
-        with Session(engine) as session:
-            session.exec(text("SELECT 1"))
+        await db.execute(text("SELECT 1"))
     except Exception:
         db_status = "degraded"
 
