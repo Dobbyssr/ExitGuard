@@ -1,11 +1,19 @@
-"""도메인 공통 예외. service가 던지고 router가 HTTPException으로 변환한다(backend/CLAUDE.md §7).
+"""도메인 공통 예외. service가 던지고 router가 HTTPException으로 변환한다(backend/CLAUDE.md §7)."""
 
-지금은 모델 단계라 실제로 raise하는 곳은 없다 — 다음 단계(service) 구현이 이 클래스들을 쓴다.
-"""
+from typing import Any
 
 
 class DomainError(Exception):
-    """모든 도메인 예외의 기반 클래스."""
+    """모든 도메인 예외의 기반 클래스.
+
+    fields: api-spec §1-3 에러 envelope의 `fields`에 실릴 구조화 상세(예: approve 409의
+    risk_count·submitted_count). router가 HTTPException(detail={...})으로 그대로 옮긴다.
+    """
+
+    def __init__(self, message: str, fields: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.message = message
+        self.fields = fields
 
 
 class NotFoundError(DomainError):

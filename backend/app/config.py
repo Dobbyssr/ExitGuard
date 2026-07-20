@@ -14,5 +14,10 @@ class Settings(BaseSettings):
         "postgresql+asyncpg://exitguard:exitguard@localhost:5433/exitguard"
     )
 
+    @property
+    def is_test_db(self) -> bool:
+        """DB 이름이 `_test`로 끝나는가 — 테스트가 개발 DB를 잘못 가리키는 사고 차단용 가드."""
+        return self.database_url.rsplit("/", 1)[-1].endswith("_test")
+
 
 settings = Settings()
