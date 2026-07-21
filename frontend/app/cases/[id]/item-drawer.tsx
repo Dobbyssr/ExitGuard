@@ -1,8 +1,8 @@
 "use client";
 
 // 항목 드로어 + 상신/검토(CM-09/10) — POST /items/{id}/submit · POST /items/{id}/review.
-// GET /items/{id}(승인이력 상세) 백엔드 미구현 — 케이스 상세에 이미 실린 item 데이터로 그린다.
-import { useState } from "react";
+// 이력·근거(CM-09)는 GET /items/{id} 실연결 — 드로어가 열릴 때 승인이력·basis를 따로 조회한다.
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { SourceBadge } from "@/components/source-badge";
 import { ItemStatusBadge } from "@/components/item-status-badge";
 import { ExpertLink } from "@/components/expert-link";
-import { ApiError, reviewItem, submitItem, type Item } from "@/lib/api";
+import { getItem, ApiError, reviewItem, submitItem, type Item, type ItemDetail } from "@/lib/api";
 import { itemKindLabel } from "@/lib/labels";
 
 export function ItemDrawer({
@@ -34,6 +34,29 @@ export function ItemDrawer({
   const [signed, setSigned] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [detail, setDetail] = useState<ItemDetail | null>(null);
+
+  // 드로어가 열릴 때(=item 바뀔 때)만 이력·근거를 따로 조회 — 목록 렌더엔 필요 없는 데이터라
+  // 케이스 상세 응답에 얹지 않고 여기서만 fetch한다(불필요한 조기 로딩 방지).
+  useEffect(() => {
+    if (!item) return;
+    let cancelled = false;
+    getItem(item.id)
+      .then(({ data }) => {
+        if (!cancelled) setDetail(data);
+      })
+      .catch(() => {
+        // 조회 실패 시 "이력 없음"으로 취급(빈 배열) — id로 로딩완료를 구분하기 위해 item을 그대로 씀.
+        if (!cancelled) setDetail({ ...item, approvals: [], basis: [] });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [item]);
+
+  // 이전 항목의 이력이 다음 항목 렌더에 잠깐 새는 것을 막는 파생값(effect에서 setState하지 않음).
+  const currentDetail = item && detail?.id === item.id ? detail : null;
+  const detailLoading = !!item && !currentDetail;
 
   function reset() {
     setMemo("");
@@ -114,6 +137,49 @@ export function ItemDrawer({
                   ))}
                 </div>
               )}
+
+              {currentDetail && currentDetail.basis.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-[12px] font-semibold text-muted-foreground">확인요건 근거</span>
+                  {currentDetail.basis.map((b, i) => (
+                    <div key={i} className="rounded-lg bg-[var(--soft)] px-3 py-2 text-[11.5px] leading-relaxed">
+                      <p className="font-semibold">{b.title}</p>
+                      {b.article && <p className="mt-0.5 text-muted-foreground">{b.article}</p>}
+                      {b.body && <p className="mt-1 text-foreground/80">{b.body}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-2">
+                <span className="text-[12px] font-semibold text-muted-foreground">상신·검토 이력</span>
+                {detailLoading && !currentDetail ? (
+                  <p className="text-[11.5px] text-muted-foreground">불러오는 중...</p>
+                ) : currentDetail && currentDetail.approvals.length > 0 ? (
+                  <ul className="flex flex-col gap-2">
+                    {currentDetail.approvals.map((a) => (
+                      <li key={a.id} className="rounded-lg border border-border px-3 py-2 text-[11.5px]">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold">담당자 #{a.submitter_id} 상신</span>
+                          <span className="text-muted-foreground">
+                            {new Date(a.submitted_at).toLocaleString("ko-KR")}
+                          </span>
+                        </div>
+                        {a.memo && <p className="mt-1 text-foreground/80">{a.memo}</p>}
+                        {a.decision && (
+                          <p className="mt-1 text-muted-foreground">
+                            검토자 #{a.reviewer_id} ·{" "}
+                            {a.decision === "confirmed" ? "확인 완료" : "반려"}
+                            {a.reviewed_at ? ` · ${new Date(a.reviewed_at).toLocaleString("ko-KR")}` : ""}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-[11.5px] text-muted-foreground">아직 상신 이력이 없습니다.</p>
+                )}
+              </div>
 
               {item.blocking && item.status !== "approved" && item.status !== "not_applicable" && (
                 <div className="flex items-center justify-between rounded-lg bg-[var(--status-danger-soft)] px-3 py-2">

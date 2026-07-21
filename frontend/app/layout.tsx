@@ -31,7 +31,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-background text-foreground md:flex-row">
         <SidebarNav />
-        <main className="min-w-0 flex-1 px-4 py-5 md:px-8 md:py-8">{children}</main>
+        <main className="min-w-0 flex-1 px-4 py-5 md:px-8 md:py-8 print:p-0">{children}</main>
         <Toaster position="bottom-center" />
       </body>
     </html>

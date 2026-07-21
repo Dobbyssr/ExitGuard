@@ -1,6 +1,15 @@
 // 백엔드 enum 값 → 한글 라벨. UI 문구는 여기 한 곳에서만 관리한다.
 // ⚖️ 직역법 경계(PRODUCT §4): "진단"/"위법입니다"/"패소" 등 금지어를 이 파일에도 쓰지 않는다.
-import type { CaseStatus, EvidenceEventType, ExitReason, IntakeRoute, ItemKind, ItemStatus, Rail } from "./api";
+import type {
+  CaseStatus,
+  CompareRowKind,
+  EvidenceEventType,
+  ExitReason,
+  IntakeRoute,
+  ItemKind,
+  ItemStatus,
+  Rail,
+} from "./api";
 
 export const railLabel: Record<Rail, string> = {
   labor: "노무",
@@ -47,6 +56,20 @@ export const caseStatusFilterLabel: Record<"all" | CaseStatus, string> = {
   in_progress: "진행중",
   review_waiting: "검토 대기",
   completed: "승인 완료",
+};
+
+// compare 5행 라벨(data-model §6-2 CompareRowKind 순서 고정) — "기준 대조"/"상태 대조" 등 판단 아닌 대조 프레이밍만.
+export const compareRowKindLabel: Record<CompareRowKind, string> = {
+  procedure: "절차",
+  standard: "기준 대조",
+  risk: "리스크 알림",
+  status: "상태 대조",
+  source: "출처",
+};
+
+export const sealStatusLabel: Record<"sealed" | "accruing", string> = {
+  sealed: "봉인 완료",
+  accruing: "봉인 누적중",
 };
 
 export const evidenceEventTypeLabel: Record<EvidenceEventType, string> = {

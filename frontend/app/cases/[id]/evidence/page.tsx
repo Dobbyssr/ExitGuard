@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChevronLeft, Lock } from "lucide-react";
 import { ApiError, getEvidence } from "@/lib/api";
-import { evidenceEventTypeLabel } from "@/lib/labels";
+import { evidenceEventTypeLabel, sealStatusLabel } from "@/lib/labels";
 
 // 증적 아카이브(CM-12) — GET /cases/{id}/evidence. seq 순 체인 + head_hash(위변조 앵커) 표시.
 export default async function EvidencePage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,7 +33,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
       <div className="flex flex-wrap items-center gap-3 rounded-xl bg-card p-4 shadow-[var(--shadow-card)]">
         <span className="flex items-center gap-1.5 rounded-[var(--radius-badge)] bg-[var(--status-ok-soft)] px-3 py-1.5 text-[12px] font-bold text-[var(--status-ok)]">
           <Lock className="size-3.5" />
-          {meta?.seal_status === "sealed" ? "봉인 완료" : "봉인 누적중"}
+          {sealStatusLabel[meta?.seal_status === "sealed" ? "sealed" : "accruing"]}
         </span>
         <span className="text-[12px] text-muted-foreground">기록 {meta?.total_count ?? sorted.length}건</span>
         {meta?.head_hash && (

@@ -81,6 +81,85 @@ export type Gate = {
 
 export type RailSummary = { rail: Rail; completion: number; items: Item[] };
 
+// ---- compare 엔진 결과 (data-model §6-2 · api-spec §2-3) --------------------
+
+export type CompareRowKind = "procedure" | "standard" | "risk" | "status" | "source";
+export type CompareRow = { kind: CompareRowKind; text: string; url?: string | null };
+
+export type CompareResult = {
+  rail: Rail;
+  subject: string;
+  rows: CompareRow[]; // 정확히 5행, kind 순서 고정(§6-2)
+  unmet_count: number;
+  badges: Badge[];
+  boundary_notice: string; // §6-3 고정 문구 — 화면에 그대로 노출(창작 금지)
+  expert_referral?: boolean | null;
+};
+
+// ---- 항목 상세 드로어 (data-model §3-2·§3-3 · api-spec §2-4) -----------------
+
+export type ItemBasisEntry = { title: string; article: string | null; body: string | null };
+export type ItemDetail = Item & { approvals: Approval[]; basis: ItemBasisEntry[] };
+
+// ---- 방어 리포트 (data-model §10 · api-spec §2-5) ---------------------------
+
+export type DefenseReportCase = {
+  id: number;
+  subject_name: string;
+  subject_job: string;
+  subject_rank: string;
+  exit_reason: ExitReason;
+  exit_date: string;
+  status: CaseStatus;
+};
+
+export type DefenseReportKpi = {
+  overall_completion: number;
+  rail_completion: Record<Rail, number>;
+  risk_count: number;
+  defensible: boolean;
+};
+
+export type DefenseReportRailSummary = { rail: Rail; completion: number; unmet_count: number; badges: Badge[] };
+
+export type DefenseReportCompareFinding = {
+  rail: Rail;
+  subject: string;
+  rows: CompareRow[];
+  unmet_count: number;
+  badges: Badge[];
+  boundary_notice: string;
+  sealed_seq: number; // 봉인된 compare_recorded 증적의 seq — "재계산 아닌 봉인 인용" 표시
+};
+
+export type DefenseReportEvidenceEntry = {
+  seq: number;
+  occurred_at: string;
+  actor: string;
+  action: string;
+  event_type: EvidenceEventType;
+  integrity_hash: string;
+};
+
+export type DefenseReportEvidenceChain = {
+  total_count: number;
+  seal_status: "sealed" | "accruing";
+  first_seq: number;
+  last_seq: number;
+  head_hash: string | null; // 체인 헤드 — 위변조 검증 앵커
+  entries: DefenseReportEvidenceEntry[];
+};
+
+export type DefenseReport = {
+  case: DefenseReportCase;
+  generated_at: string;
+  kpi: DefenseReportKpi;
+  rails: DefenseReportRailSummary[];
+  compare_findings: DefenseReportCompareFinding[];
+  evidence_chain: DefenseReportEvidenceChain;
+  boundary_notice: string; // §10 필수 — 리포트 표지·문구에 그대로 승계
+};
+
 export type Case = {
   id: number;
   subject_name: string;
@@ -228,7 +307,21 @@ export async function approveCase(
   });
 }
 
+// ---- 대조 엔진 (api-spec §2-3) ----------------------------------------------
+
+/** 인테이크 대조 실행(CM-05/LB-04) — 호출 시 서버가 compare_recorded 증적을 봉인한다. */
+export async function intakeCompare(caseId: number): Promise<Envelope<CompareResult>> {
+  return request<CompareResult>(`/cases/${caseId}/intake-compare`, {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
+
 // ---- 항목 · 상신-검토 (api-spec §2-4) ---------------------------------------
+
+export async function getItem(itemId: number): Promise<Envelope<ItemDetail>> {
+  return request<ItemDetail>(`/items/${itemId}`);
+}
 
 export async function submitItem(
   itemId: number,
@@ -254,4 +347,9 @@ export async function reviewItem(
 
 export async function getEvidence(caseId: number): Promise<Envelope<Evidence[]>> {
   return request<Evidence[]>(`/cases/${caseId}/evidence`);
+}
+
+/** 방어 리포트 Export(CM-13, B1) — `format=pdf`는 백엔드 미구현(501). 브라우저 print로 대체(ponytail). */
+export async function getDefenseReport(caseId: number): Promise<Envelope<DefenseReport>> {
+  return request<DefenseReport>(`/cases/${caseId}/evidence/export?format=json`);
 }

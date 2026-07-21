@@ -35,8 +35,8 @@ export function SidebarNav() {
 
   return (
     <>
-      {/* 데스크톱 사이드바 (md 이상) */}
-      <aside className="hidden w-[252px] shrink-0 flex-col border-r border-border bg-[var(--surface)] px-4 py-6 md:flex">
+      {/* 데스크톱 사이드바 (md 이상) — 인쇄(방어 리포트 PDF 저장)엔 노출 안 함 */}
+      <aside className="hidden w-[252px] shrink-0 flex-col border-r border-border bg-[var(--surface)] px-4 py-6 md:flex print:hidden">
         <div className="mb-8 px-2">
           <Logo />
         </div>
@@ -65,7 +65,7 @@ export function SidebarNav() {
       </aside>
 
       {/* 모바일 상단 바 (md 미만) — 반응형 붕괴 방지(DESIGN.md §4) */}
-      <header className="flex w-full items-center justify-between gap-2 overflow-x-auto border-b border-border bg-[var(--surface)] px-4 py-3 md:hidden">
+      <header className="flex w-full items-center justify-between gap-2 overflow-x-auto border-b border-border bg-[var(--surface)] px-4 py-3 md:hidden print:hidden">
         <Logo />
         <nav className="flex shrink-0 items-center gap-1">
           {NAV.map(({ href, label, icon: Icon }) => (

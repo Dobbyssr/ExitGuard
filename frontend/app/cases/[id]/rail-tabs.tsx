@@ -3,7 +3,7 @@
 // 레일별 항목 리스트(CM-07) — 케이스 상세 응답의 rails.<rail> 그대로 렌더(추가 fetch 없음).
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { CompareStub } from "@/components/compare-stub";
+import { CompareCard } from "@/components/compare-card";
 import { ItemStatusBadge } from "@/components/item-status-badge";
 import { SourceBadge } from "@/components/source-badge";
 import { ItemDrawer } from "./item-drawer";
@@ -19,7 +19,7 @@ const DOT_CLASS: Record<Rail, string> = {
   security: "bg-rail-security",
 };
 
-export function RailTabs({ rails }: { rails: CaseDetail["rails"] }) {
+export function RailTabs({ caseId, rails }: { caseId: number; rails: CaseDetail["rails"] }) {
   const [selected, setSelected] = useState<Item | null>(null);
 
   return (
@@ -39,7 +39,7 @@ export function RailTabs({ rails }: { rails: CaseDetail["rails"] }) {
           const summary = rails[rail];
           return (
             <TabsContent key={rail} value={rail} className="mt-4 flex flex-col gap-3">
-              {rail === "labor" && <CompareStub />}
+              {rail === "labor" && <CompareCard caseId={caseId} />}
               {!summary || summary.items.length === 0 ? (
                 <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-[12.5px] text-muted-foreground">
                   이 케이스엔 {railLabel[rail]} 레일 항목이 없습니다(프로파일 미매핑).

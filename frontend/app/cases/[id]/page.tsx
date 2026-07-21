@@ -47,16 +47,24 @@ export default async function CaseDetailPage({
             퇴사일 {c.exit_date} · {dday >= 0 ? `D-${dday}` : `D+${-dday}`}
           </p>
         </div>
-        <Link
-          href={`/cases/${caseId}/evidence`}
-          className="rounded-[var(--radius-btn)] border border-[var(--line2)] bg-card px-3.5 py-2 text-[12.5px] font-semibold text-foreground/80 hover:bg-secondary"
-        >
-          증적 아카이브 보기
-        </Link>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Link
+            href={`/cases/${caseId}/evidence`}
+            className="rounded-[var(--radius-btn)] border border-[var(--line2)] bg-card px-3.5 py-2 text-[12.5px] font-semibold text-foreground/80 hover:bg-secondary"
+          >
+            증적 아카이브 보기
+          </Link>
+          <Link
+            href={`/cases/${caseId}/report`}
+            className="rounded-[var(--radius-btn)] bg-primary px-3.5 py-2 text-[12.5px] font-semibold text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-primary/90"
+          >
+            방어 리포트 보기
+          </Link>
+        </div>
       </div>
 
       <GatePanel caseId={caseId} initialGate={detail.gate} caseStatus={c.status} />
-      <RailTabs rails={detail.rails} />
+      <RailTabs caseId={caseId} rails={detail.rails} />
     </div>
   );
 }
