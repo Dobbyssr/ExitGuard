@@ -122,3 +122,14 @@ class CaseRepository:
             .limit(1)
         )
         return result.scalar_one_or_none()
+
+    async def list_approvals_by_item(
+        self, db: AsyncSession, item_id: int
+    ) -> list[Approval]:
+        """항목의 상신-검토 전체 이력 — 최신순(항목 드로어 상세 CM-09, api-spec §2-4)."""
+        result = await db.execute(
+            select(Approval)
+            .where(Approval.item_id == item_id)
+            .order_by(Approval.submitted_at.desc())
+        )
+        return list(result.scalars().all())

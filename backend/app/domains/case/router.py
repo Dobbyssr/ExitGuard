@@ -21,11 +21,18 @@ from app.domains.case.schemas import (
     CaseResponse,
     CaseSummaryResponse,
     GateResponse,
+    ItemBasisEntry,
+    ItemDetailResponse,
     ItemResponse,
     RailSummary,
     ReviewRequest,
 )
-from app.domains.case.service import CaseDetail, CaseService, GateComputation
+from app.domains.case.service import (
+    CaseDetail,
+    CaseService,
+    GateComputation,
+    ItemDetail,
+)
 from app.domains.catalog.models import Standard
 from app.domains.evidence.schemas import EvidenceResponse
 from app.domains.shared.enums import Rail
@@ -79,6 +86,20 @@ def _build_item_response(
         deadline=item.deadline,
         detail=item.detail,
         badges=badges,
+    )
+
+
+def _build_item_detail_response(detail: ItemDetail) -> ItemDetailResponse:
+    """ItemDetail(§CM-09) → badges·상신이력·basis 조립. basis는 있는 값만(창작 금지)."""
+    base = _build_item_response(detail.item, detail.standards_by_id)
+    basis = [
+        ItemBasisEntry(title=s.title, article=s.article, body=s.body)
+        for s in detail.standards_by_id.values()
+    ]
+    return ItemDetailResponse(
+        **base.model_dump(),
+        approvals=[ApprovalResponse.model_validate(a) for a in detail.approvals],
+        basis=basis,
     )
 
 
@@ -222,6 +243,20 @@ async def approve_case(
         ),
         meta=Meta(toast="✓ 방어 가능 상태로 승인되었습니다"),
     )
+
+
+@router.get("/items/{item_id}", response_model=Envelope[ItemDetailResponse])
+async def get_item(
+    item_id: int,
+    db: AsyncSession = Depends(get_db),
+    service: CaseService = Depends(get_case_service),
+) -> Envelope[ItemDetailResponse]:
+    """검사항목 상세 드로어(CM-09) — `GET /items/{id}`."""
+    try:
+        detail = await service.get_item_detail(db, item_id)
+    except NotFoundError as exc:
+        raise _not_found(exc) from exc
+    return Envelope(data=_build_item_detail_response(detail))
 
 
 @router.post("/items/{item_id}/submit", response_model=Envelope[ApprovalResponse])

@@ -141,6 +141,15 @@ class CaseDetail:
     standards_by_id: dict[int, Standard] = field(default_factory=dict)
 
 
+@dataclass
+class ItemDetail:
+    """항목 드로어 상세(CM-09) 조립 결과 — router가 badges·basis로 변환한다."""
+
+    item: Item
+    approvals: list[Approval]
+    standards_by_id: dict[int, Standard] = field(default_factory=dict)
+
+
 _SORT_KEYS = {
     "deadline": lambda case, gate: case.exit_date,
     "risk": lambda case, gate: -gate.risk_count,
@@ -227,6 +236,21 @@ class CaseService:
             case=case,
             items=items,
             gate=gate,
+            standards_by_id={s.id: s for s in standards},
+        )
+
+    async def get_item_detail(self, db: AsyncSession, item_id: int) -> ItemDetail:
+        """항목 드로어 상세(CM-09) — 항목+상신-검토 이력+근거배지 원천(Standard) 조립."""
+        item = await self.case_repo.get_item(db, item_id)
+        if item is None:
+            raise NotFoundError(f"항목을 찾을 수 없습니다(id={item_id})")
+        approvals = await self.case_repo.list_approvals_by_item(db, item_id)
+        standards = await self.catalog_repo.get_standards_by_ids(
+            db, item.standard_ids or []
+        )
+        return ItemDetail(
+            item=item,
+            approvals=approvals,
             standards_by_id={s.id: s for s in standards},
         )
 

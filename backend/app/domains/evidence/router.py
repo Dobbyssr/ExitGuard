@@ -1,5 +1,7 @@
 """evidence 라우터 — 얇게: 검증→서비스 호출→예외 번역→응답 변환(api-spec §2-5)."""
 
+from typing import Literal
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,7 +9,7 @@ from app.core.dependencies import get_current_admin
 from app.core.schemas import Envelope, Meta
 from app.db import get_db
 from app.domains.evidence.dependencies import get_evidence_service
-from app.domains.evidence.schemas import EvidenceCreate, EvidenceResponse
+from app.domains.evidence.schemas import DefenseReport, EvidenceCreate, EvidenceResponse
 from app.domains.evidence.service import EvidenceService
 from app.domains.shared.exceptions import NotFoundError
 from app.domains.user.models import User
@@ -62,3 +64,37 @@ async def list_evidence(
             head_hash=meta.head_hash,
         ),
     )
+
+
+@router.get(
+    "/cases/{case_id}/evidence/export",
+    response_model=Envelope[DefenseReport],
+)
+async def export_report(
+    case_id: int,
+    format: Literal["json", "pdf"] = "json",
+    db: AsyncSession = Depends(get_db),
+    service: EvidenceService = Depends(get_evidence_service),
+) -> Envelope[DefenseReport]:
+    """방어 리포트 Export(CM-13, B1) — `GET /cases/{id}/evidence/export`.
+
+    `format=pdf`는 MVP 범위 밖(도비 브리프 — 억지 구현 금지, ponytail). FE는 `format=json`
+    응답을 그대로 렌더할 수 있어 501로 명시적 미구현을 알린다(api-spec 에러표에 없는
+    코드라 `NOT_IMPLEMENTED`로 표기 — 신설 코드 필요 시 헤르미온느 확인 대상).
+    """
+    if format == "pdf":
+        raise HTTPException(
+            501,
+            detail={
+                "code": "NOT_IMPLEMENTED",
+                "message": "PDF 내보내기는 아직 지원하지 않습니다. format=json으로 조회하세요",
+                "fields": None,
+            },
+        )
+    try:
+        report = await service.export_report(db, case_id)
+    except NotFoundError as exc:
+        raise HTTPException(
+            404, detail={"code": "NOT_FOUND", "message": exc.message, "fields": None}
+        ) from exc
+    return Envelope(data=report)

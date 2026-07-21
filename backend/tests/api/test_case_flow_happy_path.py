@@ -123,3 +123,38 @@ async def test_get_case_when_not_found_returns_404(client: AsyncClient) -> None:
 
     assert res.status_code == 404
     assert res.json()["error"]["code"] == "NOT_FOUND"
+
+
+async def test_get_item_when_reviewed_returns_detail_with_approvals_and_basis(
+    client: AsyncClient, seeded: dict
+) -> None:
+    """항목 드로어 상세(CM-09) — 상신+검토 이후 approvals 이력·badges·basis가 함께 온다."""
+    detail = await _create_case(client, seeded)
+    l01 = next(i for i in detail["items"] if i["code"] == "L-01")
+
+    await client.post(
+        f"/api/v1/items/{l01['id']}/submit",
+        json={"memo": "금품청산 정산 완료", "signed": True},
+    )
+    await client.post(
+        f"/api/v1/items/{l01['id']}/review", json={"decision": "confirmed"}
+    )
+
+    res = await client.get(f"/api/v1/items/{l01['id']}")
+
+    assert res.status_code == 200, res.text
+    item = res.json()["data"]
+    assert item["code"] == "L-01"
+    assert item["status"] == "approved"
+    assert item["badges"][0]["tier"] == "L1"
+    assert len(item["approvals"]) == 1
+    assert item["approvals"][0]["decision"] == "confirmed"
+    assert item["approvals"][0]["memo"] == "금품청산 정산 완료"
+    assert item["basis"][0]["title"] == "근로기준법 제36조"
+
+
+async def test_get_item_when_not_found_returns_404(client: AsyncClient) -> None:
+    res = await client.get("/api/v1/items/999999")
+
+    assert res.status_code == 404
+    assert res.json()["error"]["code"] == "NOT_FOUND"

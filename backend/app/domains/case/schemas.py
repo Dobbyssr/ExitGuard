@@ -145,6 +145,21 @@ class ApprovalResponse(BaseModel):
     submitted_at: datetime
 
 
+class ItemBasisEntry(BaseModel):
+    """확인요건·근거 문구(CM-09 `basis`) — Standard.article/body 그대로, 창작 금지·있는 값만."""
+
+    title: str
+    article: str | None
+    body: str | None
+
+
+class ItemDetailResponse(ItemResponse):
+    """검사항목 상세 드로어(CM-09) — ItemResponse + 상신-검토 이력 + 확인요건·근거."""
+
+    approvals: list[ApprovalResponse]
+    basis: list[ItemBasisEntry]
+
+
 class ReviewRequest(BaseModel):
     """검토 요청(CM-10) — `POST /items/{id}/review`."""
 
