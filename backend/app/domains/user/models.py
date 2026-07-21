@@ -26,11 +26,14 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String)
-    email: Mapped[str] = mapped_column(String, unique=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
+    name: Mapped[str] = mapped_column(String, comment="사용자 이름")
+    email: Mapped[str] = mapped_column(String, unique=True, comment="로그인 ID")
     role: Mapped[Role] = mapped_column(
-        SAEnum(Role, native_enum=False, create_constraint=True)
+        SAEnum(Role, native_enum=False, create_constraint=True),
+        comment="사용자 역할(admin/user)",
     )
     # list[str] 그대로 — 중첩 구조가 없어 JSONB보다 네이티브 배열이 단순하다.
-    granted_scopes: Mapped[list[str] | None] = mapped_column(ARRAY(String))
+    granted_scopes: Mapped[list[str] | None] = mapped_column(
+        ARRAY(String), comment="admin이 부여한 권한 목록(상신/레일수행/승인)"
+    )

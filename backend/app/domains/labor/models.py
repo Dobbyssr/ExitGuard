@@ -87,26 +87,35 @@ class LaborPrecedent(Base):
         Index("ix_labor_precedents_category", "category"),
     )
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
     # CSV `순번` — 실측 사례 인용 참조키(순번 51·388). 코퍼스 내 자연키라 유일해야 정상이다.
-    seq: Mapped[int] = mapped_column(Integer, unique=True)
-    category: Mapped[LaborCaseType] = mapped_column(
-        SAEnum(LaborCaseType, native_enum=False, create_constraint=True)
+    seq: Mapped[int] = mapped_column(
+        Integer, unique=True, comment="CSV 순번(실측 사례 인용 참조키)"
     )
-    title: Mapped[str] = mapped_column(String)
-    committee: Mapped[str] = mapped_column(String)
-    decided_on: Mapped[date | None] = mapped_column(Date)
+    category: Mapped[LaborCaseType] = mapped_column(
+        SAEnum(LaborCaseType, native_enum=False, create_constraint=True),
+        comment="사건유형(CSV 자료구분)",
+    )
+    title: Mapped[str] = mapped_column(String, comment="제목(한 줄 요지)")
+    committee: Mapped[str] = mapped_column(String, comment="위원회명")
+    decided_on: Mapped[date | None] = mapped_column(Date, comment="작성일자")
     # ponytail: 실측 CSV가 레포에 없어 순번 51·388을 계약 §4-3 표에서 수기 하드코딩한다(시드).
     # §4-3 표는 seq/category/title/case_no/matched_elements만 제공하고 decided_on은 안 준다
     # (순번 51은 제목에 박힌 "'15.4.27.판정"으로 실측 유추 가능하나, 388은 근거 없음 — 없는
     # 값을 창작하지 않기 위해 nullable로 둔다. 원본 §4 필수(●) 표기와의 델타 — [결정필요]).
-    views: Mapped[int | None] = mapped_column(Integer)
+    views: Mapped[int | None] = mapped_column(Integer, comment="조회수")
     # 약 27%만 존재(§4-2) — 나머지 null. 정식 사건번호 아닌 내부표기는 넣지 않는다(창작 금지).
-    case_no: Mapped[str | None] = mapped_column(String)
+    case_no: Mapped[str | None] = mapped_column(
+        String, comment="사건번호(제목에서 추출, 약 27%만 존재)"
+    )
     # LaborRequiredElement 값의 문자열 배열(JSONB) — Item.standard_ids와 동일하게 조인테이블
     # 없이 MVP 단순화(ponytail). 화이트리스트 검증 대상 어휘와 동일 폐집합이라 값 오염 위험 낮음.
-    matched_elements: Mapped[list[str]] = mapped_column(JSONB)
-    is_seed: Mapped[bool] = mapped_column(Boolean, default=False)
+    matched_elements: Mapped[list[str]] = mapped_column(
+        JSONB, comment="이 판정례가 커버하는 판정 요구 요소 목록(대조 매칭 대상)"
+    )
+    is_seed: Mapped[bool] = mapped_column(
+        Boolean, default=False, comment="데모 직결 실측 사례 표시(순번 51·388=true)"
+    )
     ingested_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), server_default=func.now(), comment="코퍼스 적재 시각"
     )

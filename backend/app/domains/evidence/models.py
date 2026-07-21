@@ -44,22 +44,36 @@ class Evidence(Base):
         UniqueConstraint("case_id", "seq", name="uq_evidence_case_id_seq"),
     )
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
     # 별도 index=True를 달지 않는다 — 위 UNIQUE(case_id, seq)가 case_id 단독 조회도
     # 리딩 컬럼으로 이미 커버하는 복합 인덱스라 중복 인덱스가 된다.
-    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
-    seq: Mapped[int] = mapped_column(Integer)
-    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    actor: Mapped[str] = mapped_column(String)
-    action: Mapped[str] = mapped_column(String)
+    case_id: Mapped[int] = mapped_column(
+        ForeignKey("cases.id"), comment="소속 케이스 FK"
+    )
+    seq: Mapped[int] = mapped_column(
+        Integer, comment="처리 순번(case 내 단조증가, 체인 순서 조회 키)"
+    )
+    occurred_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), comment="처리 일시"
+    )
+    actor: Mapped[str] = mapped_column(String, comment="수행자")
+    action: Mapped[str] = mapped_column(String, comment="처리 내용")
     event_type: Mapped[EvidenceEventType] = mapped_column(
-        SAEnum(EvidenceEventType, native_enum=False, create_constraint=True)
+        SAEnum(EvidenceEventType, native_enum=False, create_constraint=True),
+        comment="봉인 트리거 이벤트 종류",
     )
     origin: Mapped[EvidenceOrigin] = mapped_column(
-        SAEnum(EvidenceOrigin, native_enum=False, create_constraint=True)
+        SAEnum(EvidenceOrigin, native_enum=False, create_constraint=True),
+        comment="봉인 출처(auto=이벤트 자동 봉인/manual=수동 보충 봉인)",
     )
-    document_ref: Mapped[str | None] = mapped_column(String)
-    payload: Mapped[dict] = mapped_column(JSONB)
-    integrity_hash: Mapped[str] = mapped_column(String)
-    prev_hash: Mapped[str | None] = mapped_column(String)
-    sealed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    document_ref: Mapped[str | None] = mapped_column(String, comment="관련 문서명")
+    payload: Mapped[dict] = mapped_column(JSONB, comment="봉인 대상 스냅샷")
+    integrity_hash: Mapped[str] = mapped_column(
+        String, comment="SHA-256 해시(payload 무결성)"
+    )
+    prev_hash: Mapped[str | None] = mapped_column(
+        String, comment="직전 레코드 해시(체인 — 변경 탐지)"
+    )
+    sealed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), comment="봉인 시각"
+    )

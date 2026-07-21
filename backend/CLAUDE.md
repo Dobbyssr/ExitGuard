@@ -100,6 +100,7 @@ app/
 ## 9. 모델 · 10. 스키마
 
 - SQLAlchemy 2.0 `Mapped[...]` + `mapped_column`. `Base(DeclarativeBase)`에 `NAMING_CONVENTION` 적용. `TimestampMixin`(created/updated). 시간 컬럼 항상 `timezone=True`(UTC).
+- **모든 컬럼에 `comment=`를 단다(계약 필드설명 근거·§17 직역법 준수). 신규 컬럼도 항상.** 근거는 헤르미온느 데이터모델 문서의 해당 필드 설명 — 창작 금지, 간결한 한 줄.
 - 스키마 변경은 **Alembic autogenerate만** — `versions/` 손편집 금지.
 - 스키마 명명 `<Model><용도>`(`CaseCreate`/`CaseResponse`). ORM→응답은 `ConfigDict(from_attributes=True)` + `model_validate`.
 - **ORM 모델을 응답으로 직접 반환 금지** — 응답 스키마 경유로 노출 필드 통제(민감 필드 유출 방지). 부분 수정은 `model_dump(exclude_unset=True)`.

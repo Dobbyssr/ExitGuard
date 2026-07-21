@@ -29,10 +29,13 @@ class TimestampMixin:
     """생성·수정 시각(UTC) 컬럼 믹스인. created_at·updated_at을 둘 다 요구하는 모델에만 쓴다."""
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), server_default=func.now(), comment="생성 시각(UTC)"
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        comment="수정 시각(UTC)",
     )
 
 

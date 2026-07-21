@@ -29,20 +29,24 @@ class Standard(Base):
 
     __tablename__ = "standards"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
     tier: Mapped[StandardTier] = mapped_column(
-        SAEnum(StandardTier, native_enum=False, create_constraint=True)
+        SAEnum(StandardTier, native_enum=False, create_constraint=True),
+        comment="근거 층위(L1/L2/L3)",
     )
     rail: Mapped[Rail] = mapped_column(
-        SAEnum(Rail, native_enum=False, create_constraint=True)
+        SAEnum(Rail, native_enum=False, create_constraint=True), comment="소속 레일"
     )
-    title: Mapped[str] = mapped_column(String)
-    article: Mapped[str | None] = mapped_column(String)
-    body: Mapped[str | None] = mapped_column(String)
-    source_url: Mapped[str | None] = mapped_column(String)
-    version: Mapped[str] = mapped_column(String)
+    title: Mapped[str] = mapped_column(String, comment="근거 제목")
+    article: Mapped[str | None] = mapped_column(String, comment="조문/요지")
+    body: Mapped[str | None] = mapped_column(String, comment="인용 원문")
+    source_url: Mapped[str | None] = mapped_column(String, comment="원문 링크")
+    version: Mapped[str] = mapped_column(String, comment="근거 버전")
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        comment="최신 반영 시각",
     )
 
 
@@ -51,12 +55,14 @@ class RailTemplate(Base):
 
     __tablename__ = "rail_templates"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
     rail: Mapped[Rail] = mapped_column(
-        SAEnum(Rail, native_enum=False, create_constraint=True)
+        SAEnum(Rail, native_enum=False, create_constraint=True), comment="소속 레일"
     )
-    name: Mapped[str] = mapped_column(String)
-    is_base: Mapped[bool] = mapped_column(Boolean)
+    name: Mapped[str] = mapped_column(String, comment="템플릿 이름")
+    is_base: Mapped[bool] = mapped_column(
+        Boolean, comment="기본 제공 템플릿 여부(vs 회사 커스텀)"
+    )
 
     template_items: Mapped[list["TemplateItem"]] = relationship(
         back_populates="rail_template"
@@ -68,20 +74,27 @@ class TemplateItem(Base):
 
     __tablename__ = "template_items"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
     rail_template_id: Mapped[int] = mapped_column(
-        ForeignKey("rail_templates.id"), index=True
+        ForeignKey("rail_templates.id"), index=True, comment="소속 템플릿 FK"
     )
-    code: Mapped[str] = mapped_column(String)
-    name: Mapped[str] = mapped_column(String)
+    code: Mapped[str] = mapped_column(String, comment="항목코드(레일 접두어 L-/S-/C-)")
+    name: Mapped[str] = mapped_column(String, comment="항목명")
     kind: Mapped[ItemKind] = mapped_column(
-        SAEnum(ItemKind, native_enum=False, create_constraint=True)
+        SAEnum(ItemKind, native_enum=False, create_constraint=True),
+        comment="항목 구분(statutory/internal/recommended)",
     )
-    blocking: Mapped[bool] = mapped_column(Boolean)
+    blocking: Mapped[bool] = mapped_column(
+        Boolean, comment="게이트 차단 여부(기본 kind==statutory)"
+    )
     # ponytail: standard_ids는 JSONB int 배열(조인테이블 없이 MVP 단순화).
     # M2M 정규화 여부는 스네이프 DB감수에서 판정.
-    standard_ids: Mapped[list[int] | None] = mapped_column(JSONB)
-    detail_schema: Mapped[dict | None] = mapped_column(JSONB)
+    standard_ids: Mapped[list[int] | None] = mapped_column(
+        JSONB, comment="근거(Standard.id 목록)"
+    )
+    detail_schema: Mapped[dict | None] = mapped_column(
+        JSONB, comment="레일별 상세 필드 스키마 예약"
+    )
 
     rail_template: Mapped["RailTemplate"] = relationship(
         back_populates="template_items"
@@ -93,8 +106,11 @@ class Profile(Base):
 
     __tablename__ = "profiles"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String)
-    job: Mapped[str | None] = mapped_column(String)
-    rank: Mapped[str | None] = mapped_column(String)
-    rail_map: Mapped[dict] = mapped_column(JSONB)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
+    name: Mapped[str] = mapped_column(String, comment="프로파일 이름")
+    job: Mapped[str | None] = mapped_column(String, comment="직종 축")
+    rank: Mapped[str | None] = mapped_column(String, comment="직급 축")
+    rail_map: Mapped[dict] = mapped_column(
+        JSONB,
+        comment="레일별 적용 RailTemplate 매핑({labor,trade_secret,security → rail_template_id})",
+    )

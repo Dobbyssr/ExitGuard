@@ -64,27 +64,38 @@ class Case(Base, TimestampMixin):
 
     __tablename__ = "cases"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    subject_name: Mapped[str] = mapped_column(String)
-    subject_job: Mapped[str] = mapped_column(String)
-    subject_rank: Mapped[str] = mapped_column(String)
-    subject_role_title: Mapped[str | None] = mapped_column(String)
-    exit_reason: Mapped[ExitReason] = mapped_column(
-        SAEnum(ExitReason, native_enum=False, create_constraint=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
+    subject_name: Mapped[str] = mapped_column(String, comment="대상자(퇴사자) 이름")
+    subject_job: Mapped[str] = mapped_column(String, comment="직무/직종")
+    subject_rank: Mapped[str] = mapped_column(String, comment="직급")
+    subject_role_title: Mapped[str | None] = mapped_column(
+        String, comment="직책/역할명"
     )
-    reason_text: Mapped[str | None] = mapped_column(String)
-    exit_date: Mapped[date] = mapped_column(Date)
+    exit_reason: Mapped[ExitReason] = mapped_column(
+        SAEnum(ExitReason, native_enum=False, create_constraint=True),
+        comment="퇴사 사유유형(voluntary/recommended_resignation/dismissal/contract_expiry)",
+    )
+    reason_text: Mapped[str | None] = mapped_column(
+        String, comment="회사사유 입력 텍스트(대조 엔진 입력원)"
+    )
+    exit_date: Mapped[date] = mapped_column(Date, comment="퇴직 예정일(기한 계산 기준)")
     intake_route: Mapped[IntakeRoute] = mapped_column(
-        SAEnum(IntakeRoute, native_enum=False, create_constraint=True)
+        SAEnum(IntakeRoute, native_enum=False, create_constraint=True),
+        comment="케이스 접수경로(groupware/dismissal/resignation)",
     )
     profile_id: Mapped[int | None] = mapped_column(
-        ForeignKey("profiles.id"), index=True
+        ForeignKey("profiles.id"),
+        index=True,
+        comment="적용 프로파일 FK(직무·직급→항목 자동배정)",
     )
     status: Mapped[CaseStatus] = mapped_column(
         SAEnum(CaseStatus, native_enum=False, create_constraint=True),
         default=CaseStatus.in_progress,
+        comment="케이스 진행상태(in_progress/review_waiting/completed)",
     )
-    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    created_by: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), index=True, comment="접수 담당자 FK(User)"
+    )
 
     items: Mapped[list["Item"]] = relationship(back_populates="case")
 
@@ -95,29 +106,41 @@ class Item(Base, TimestampMixin):
     __tablename__ = "items"
     __table_args__ = (Index("ix_items_case_id_status", "case_id", "status"),)
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
     # case_id 단독 인덱스는 두지 않는다 — 아래 복합 (case_id, status)의 리딩 컬럼이
     # case_id 단독 조회를 이미 커버하므로 별도 단일 인덱스는 순수 중복(스네이프 round2).
-    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
-    rail: Mapped[Rail] = mapped_column(
-        SAEnum(Rail, native_enum=False, create_constraint=True)
+    case_id: Mapped[int] = mapped_column(
+        ForeignKey("cases.id"), comment="소속 케이스 FK"
     )
-    code: Mapped[str] = mapped_column(String)
-    name: Mapped[str] = mapped_column(String)
+    rail: Mapped[Rail] = mapped_column(
+        SAEnum(Rail, native_enum=False, create_constraint=True),
+        comment="소속 레일(labor/trade_secret/security)",
+    )
+    code: Mapped[str] = mapped_column(String, comment="항목코드(레일 접두어 L-/S-/C-)")
+    name: Mapped[str] = mapped_column(String, comment="항목명")
     kind: Mapped[ItemKind] = mapped_column(
-        SAEnum(ItemKind, native_enum=False, create_constraint=True)
+        SAEnum(ItemKind, native_enum=False, create_constraint=True),
+        comment="항목 구분(statutory/internal/recommended)",
     )
     status: Mapped[ItemStatus] = mapped_column(
         SAEnum(ItemStatus, native_enum=False, create_constraint=True),
         default=ItemStatus.pending,
+        comment="검사항목 상태(pending/submitted/approved/rejected/not_applicable)",
     )
-    blocking: Mapped[bool] = mapped_column(Boolean)
-    sub: Mapped[str | None] = mapped_column(String)
-    deadline: Mapped[date | None] = mapped_column(Date)
+    blocking: Mapped[bool] = mapped_column(Boolean, comment="게이트 차단 여부")
+    sub: Mapped[str | None] = mapped_column(String, comment="진행 요약 한 줄")
+    deadline: Mapped[date | None] = mapped_column(
+        Date, comment="법정 기한일(있는 경우)"
+    )
     # ponytail: standard_ids는 JSONB int 배열(조인테이블 없이 MVP 단순화).
     # M2M 정규화 여부는 스네이프 DB감수에서 판정.
-    standard_ids: Mapped[list[int] | None] = mapped_column(JSONB)
-    detail: Mapped[dict | None] = mapped_column(JSONB)
+    standard_ids: Mapped[list[int] | None] = mapped_column(
+        JSONB, comment="근거 배지(Standard.id 목록)"
+    )
+    detail: Mapped[dict | None] = mapped_column(
+        JSONB,
+        comment="레일별 상세 필드(노무 기한요소/영업비밀 자산요소/보안 회수대상)",
+    )
 
     case: Mapped["Case"] = relationship(back_populates="items")
     approvals: Mapped[list["Approval"]] = relationship(back_populates="item")
@@ -128,20 +151,31 @@ class Approval(Base):
 
     __tablename__ = "approvals"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    item_id: Mapped[int] = mapped_column(ForeignKey("items.id"), index=True)
-    submitter_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
-    memo: Mapped[str | None] = mapped_column(String)
-    attachments: Mapped[list[dict] | None] = mapped_column(JSONB)
-    signed: Mapped[bool] = mapped_column(Boolean)
-    basis_note: Mapped[str | None] = mapped_column(String)
-    reviewer_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), index=True)
-    decision: Mapped[ApprovalDecision | None] = mapped_column(
-        SAEnum(ApprovalDecision, native_enum=False, create_constraint=True)
+    id: Mapped[int] = mapped_column(primary_key=True, comment="PK")
+    item_id: Mapped[int] = mapped_column(
+        ForeignKey("items.id"), index=True, comment="대상 항목 FK"
     )
-    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    submitter_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), index=True, comment="상신자(담당자) FK"
+    )
+    memo: Mapped[str | None] = mapped_column(String, comment="상신 메모")
+    attachments: Mapped[list[dict] | None] = mapped_column(
+        JSONB, comment="첨부 문서 목록({name,size})"
+    )
+    signed: Mapped[bool] = mapped_column(Boolean, comment="전자서명 여부")
+    basis_note: Mapped[str | None] = mapped_column(String, comment="기준 근거 문구")
+    reviewer_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id"), index=True, comment="검토자(관리자) FK"
+    )
+    decision: Mapped[ApprovalDecision | None] = mapped_column(
+        SAEnum(ApprovalDecision, native_enum=False, create_constraint=True),
+        comment="검토 결과(confirmed/rejected, 미검토 시 null)",
+    )
+    reviewed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), comment="검토 일시"
+    )
     submitted_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), server_default=func.now(), comment="상신 일시"
     )
 
     item: Mapped["Item"] = relationship(back_populates="approvals")
