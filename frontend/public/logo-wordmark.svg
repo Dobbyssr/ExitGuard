@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64" width="360" height="64" role="img" aria-label="ExitGuard">
+  <title>ExitGuard</title>
+  <!-- Mark, scaled to cap height and vertically centered -->
+  <g transform="translate(0,2) scale(0.6)">
+    <rect x="6" y="8"  width="36" height="14" fill="#0FB2C4"/>
+    <rect x="6" y="43" width="36" height="14" fill="#8B5CF6"/>
+    <rect x="6" y="78" width="36" height="14" fill="#F59E0B"/>
+    <g fill="#3C4E72">
+      <rect x="44" y="8"  width="14" height="84"/>
+      <rect x="44" y="8"  width="68" height="14"/>
+      <rect x="44" y="78" width="68" height="14"/>
+      <rect x="98" y="22" width="14" height="12"/>
+      <rect x="98" y="43" width="14" height="49"/>
+      <rect x="70" y="43" width="42" height="14"/>
+    </g>
+  </g>
+  <!-- Wordmark. System sans stack; Guard is the ink weight anchor -->
+  <text x="96" y="45"
+        font-family="'Pretendard','Apple SD Gothic Neo','Helvetica Neue',Arial,sans-serif"
+        font-size="42" letter-spacing="-1.2">
+    <tspan fill="#3C4E72" font-weight="500">Exit</tspan><tspan fill="#0FB2C4" font-weight="800">Guard</tspan>
+  </text>
+</svg>

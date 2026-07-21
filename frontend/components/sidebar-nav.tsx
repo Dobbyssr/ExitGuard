@@ -13,38 +13,12 @@ const NAV = [
   { href: "/cases/new", label: "새 케이스 접수", icon: FilePlus2 },
 ];
 
-// 로고 = ExitGuard 브랜드 마크(방패+체크). 데모(pitch/데모 standalone)의 SVG 패스를 그대로
-// 가져오되, 색은 옆 "Guard" 워드마크와 맞춰 FE 브랜드 틸(--teal-1) 위 딥네이비(--primary) 배경.
+// 로고 = ExitGuard 정본 브랜드 로고(pitch/아이콘/exitguard-logo-wordmark.svg).
+// 3레일(노무 틸·영업비밀 퍼플·보안 앰버) → 기하학적 G 마크 + ExitGuard 워드마크.
 function Logo() {
   return (
-    <div className="flex items-center gap-2">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-primary">
-        <svg
-          viewBox="420 190 360 490"
-          className="h-[22px] w-[22px]"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            d="M600 210 L760 280 V430 C760 545 690 615 600 655 C510 615 440 545 440 430 V280 Z"
-            style={{ stroke: "var(--teal-1)" }}
-            strokeWidth={26}
-            strokeLinejoin="round"
-          />
-          <path
-            d="M545 430 l45 45 90 -110"
-            style={{ stroke: "var(--teal-1)" }}
-            strokeWidth={26}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </span>
-      <span className="text-[16px] font-extrabold tracking-[-0.5px]">
-        Exit<span style={{ color: "var(--teal-1)" }}>Guard</span>
-      </span>
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/logo-wordmark.svg" alt="ExitGuard" className="h-7 w-auto" />
   );
 }
 
