@@ -14,6 +14,7 @@ from app.db import Base
 from app.domains.case import models as _case_models  # noqa: F401
 from app.domains.catalog import models as _catalog_models  # noqa: F401
 from app.domains.evidence import models as _evidence_models  # noqa: F401
+from app.domains.labor import models as _labor_models  # noqa: F401
 from app.domains.user import models as _user_models  # noqa: F401
 
 # this is the Alembic Config object, which provides

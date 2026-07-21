@@ -206,7 +206,10 @@ class CaseService:
                     status=_resolve_initial_status(case.exit_reason, ti.code),
                     blocking=ti.blocking,
                     standard_ids=ti.standard_ids,
-                    detail=None,
+                    # detail_schema는 Phase 1에서 레일별로 "채워진 값"까지 겸한다(MVP는
+                    # 회사 커스텀이 없어 스키마=값). 노무는 deadline_rule 등(§2-2)을 여기서
+                    # 그대로 복제해 받는다 — case 도메인은 내용을 모른 채 통째로 옮길 뿐이다.
+                    detail=ti.detail_schema,
                 )
                 await self.case_repo.add_item(db, item)
         await db.flush()

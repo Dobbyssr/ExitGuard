@@ -4,10 +4,13 @@
 없다(시드로만 채운다). case 도메인이 apply_profile·배지 조립에 이 리포지토리를 주입받아 쓴다.
 """
 
+from collections.abc import Sequence
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domains.catalog.models import Profile, Standard, TemplateItem
+from app.domains.shared.enums import Rail
 
 
 class CatalogRepository:
@@ -35,4 +38,24 @@ class CatalogRepository:
         if not standard_ids:
             return []
         result = await db.execute(select(Standard).where(Standard.id.in_(standard_ids)))
+        return list(result.scalars().all())
+
+    async def list_standards(
+        self,
+        db: AsyncSession,
+        *,
+        rail: Rail | None = None,
+        titles: Sequence[str] | None = None,
+    ) -> list[Standard]:
+        """근거 배지 조립용 — rail·title로 근거 레코드를 조회한다(compare 서비스가 사용).
+
+        title 필터는 요구요소별로 어떤 Standard가 관련 있는지가 tier만으로는 구분 안 되는
+        경우(레일 하나에 L1 레코드가 여럿)에 필요하다(예: 노무 L1 §36/§27/§26 3건 중 §27만).
+        """
+        stmt = select(Standard)
+        if rail is not None:
+            stmt = stmt.where(Standard.rail == rail)
+        if titles is not None:
+            stmt = stmt.where(Standard.title.in_(titles))
+        result = await db.execute(stmt)
         return list(result.scalars().all())

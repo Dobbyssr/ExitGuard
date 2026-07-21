@@ -26,3 +26,11 @@ class DuplicateError(DomainError):
 
 class InvalidStateError(DomainError):
     """상태머신·비즈니스 규칙이 허용하지 않는 전이 시도 → 409/422."""
+
+
+class CompareFailedError(DomainError):
+    """대조 엔진 처리 실패 → 422(api-spec §1-3 `COMPARE_FAILED`).
+
+    LLM 실패·유효신호 0건은 여기 해당하지 않는다(§6-4 Fallback으로 흡수돼 결정론만으로
+    성립) — 이 예외는 파이프라인 자체가 처리 불가한 경우(예: MVP 미지원 레일)에만 던진다.
+    """

@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.exceptions import register_exception_handlers
 from app.db import engine
 from app.domains.case.router import router as case_router
+from app.domains.compare.router import router as compare_router
 from app.domains.evidence.router import router as evidence_router
 from app.routers import health
 
@@ -31,4 +32,5 @@ register_exception_handlers(app)
 
 app.include_router(health.router)
 app.include_router(case_router, prefix="/api/v1")
+app.include_router(compare_router, prefix="/api/v1")
 app.include_router(evidence_router, prefix="/api/v1")

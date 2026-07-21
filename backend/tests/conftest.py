@@ -28,6 +28,7 @@ from app.domains.catalog.models import (
     TemplateItem,
 )
 from app.domains.evidence import models as _evidence_models  # noqa: F401
+from app.domains.labor import models as _labor_models  # noqa: F401
 from app.domains.shared.enums import ItemKind, Rail
 from app.domains.user.models import Role, User
 from app.main import app
